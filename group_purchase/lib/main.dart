@@ -1,11 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:group_purchase/login.dart';
 
-import 'home_page.dart';
+import 'gui/home_page.dart';
 
-void main() {
-  runApp(const MaterialApp(
-    title: 'Navigation Basics',
-    home: MainPage(),
-  ));
+import 'package:firebase_core/firebase_core.dart';
+
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: MainPage(),
+    );
+  }
 }
