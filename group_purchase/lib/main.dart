@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'decisions_tree.dart';
+import 'gui/decisions_tree.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 

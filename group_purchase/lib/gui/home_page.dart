@@ -14,13 +14,17 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Home Page"),
+        title: Text("Strona główna"),
+        backgroundColor: Colors.green,
       ), // Pasek górny
       body: ElevatedButton(
         onPressed: () {
           logout();
         },
-        child: Text("Log out"),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.green,
+        ),
+        child: Text("Wyloguj się"),
       ),
     );
   }

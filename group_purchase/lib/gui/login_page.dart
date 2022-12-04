@@ -55,7 +55,8 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Login Page"),
+        title: Text("Logowanie"),
+        backgroundColor: Colors.green,
       ), // Pasek górny
       body: Column(
         children: [
@@ -63,7 +64,10 @@ class _LoginPageState extends State<LoginPage> {
             onPressed: () {
               loginAno();
             },
-            child: Text("Sign In Ano"),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+            ),
+            child: Text("Zaloguj anonimowo"),
           ), // Przycisk logowania anonimowego
           TextFormField(
             controller: _controllerEmail,
@@ -71,14 +75,17 @@ class _LoginPageState extends State<LoginPage> {
           ), // Pole wprowadzania emaila
           TextFormField(
             controller: _controllerPassword,
-            decoration: InputDecoration(labelText: "Password"),
+            decoration: InputDecoration(labelText: "Hasło"),
           ), // Pole wprowadzania hasła
           Text(error),
           ElevatedButton(
             onPressed: () {
               login ? loginUser() : createUser();
             },
-            child: Text(login ? "Login into account" : "Create User"),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+            ),
+            child: Text(login ? "Zaloguj się" : "Załóż konto"),
           ),
           OutlinedButton(
             onPressed: () {
@@ -86,7 +93,7 @@ class _LoginPageState extends State<LoginPage> {
                 login = !login;
               });
             },
-            child: Text("Switch Login/Create account"),
+            child: Text(login ? "Stwórz konto" : " Zaloguj się"),
           )
         ],
       ),
