@@ -121,6 +121,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.10.0"
+  stateless:
+    dependency: "direct main"
+    description:
+      name: stateless
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.1"
   stream_channel:
     dependency: transitive
     description:
