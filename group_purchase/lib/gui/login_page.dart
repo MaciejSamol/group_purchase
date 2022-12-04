@@ -60,15 +60,6 @@ class _LoginPageState extends State<LoginPage> {
       ), // Pasek górny
       body: Column(
         children: [
-          ElevatedButton(
-            onPressed: () {
-              loginAno();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green,
-            ),
-            child: Text("Zaloguj anonimowo"),
-          ), // Przycisk logowania anonimowego
           TextFormField(
             controller: _controllerEmail,
             decoration: InputDecoration(labelText: "Email"),
@@ -78,14 +69,32 @@ class _LoginPageState extends State<LoginPage> {
             decoration: InputDecoration(labelText: "Hasło"),
           ), // Pole wprowadzania hasła
           Text(error),
-          ElevatedButton(
-            onPressed: () {
-              login ? loginUser() : createUser();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green,
-            ),
-            child: Text(login ? "Zaloguj się" : "Załóż konto"),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  login ? loginUser() : createUser();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                ),
+                child: Text(login ? "Zaloguj się" : "Załóż konto"),
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 5),
+                child: ElevatedButton(
+                  onPressed: () {
+                    loginAno();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                  ),
+                  child: Text("Zaloguj anonimowo"),
+                ),
+              ), // Przycisk logowania anonimowego
+            ],
           ),
           OutlinedButton(
             onPressed: () {
