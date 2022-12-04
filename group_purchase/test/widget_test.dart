@@ -7,7 +7,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:group_purchase/home_page.dart';
+import 'package:group_purchase/gui/home_page.dart';
 
 import 'package:group_purchase/main.dart';
 

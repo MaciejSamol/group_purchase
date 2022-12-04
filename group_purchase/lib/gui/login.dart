@@ -2,6 +2,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import 'home_page.dart';
+
 class LoginPage extends StatefulWidget {
   final Function(User?) onSignIn;
   LoginPage({required this.onSignIn});
@@ -16,12 +18,6 @@ class _LoginPageState extends State<LoginPage> {
 
   String error = "";
   bool login = true;
-
-  Future<void> loginAno() async {
-    UserCredential userCredential =
-        await FirebaseAuth.instance.signInAnonymously();
-    widget.onSignIn(userCredential.user);
-  }
 
   Future<void> loginUser() async {
     try {
@@ -55,8 +51,8 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Logowanie"),
         backgroundColor: Colors.green,
+        title: Text('Zarejestruj się'),
       ), // Pasek górny
       body: Column(
         children: [
@@ -76,24 +72,15 @@ class _LoginPageState extends State<LoginPage> {
               ElevatedButton(
                 onPressed: () {
                   login ? loginUser() : createUser();
+                  if (login == true) {
+                    Navigator.pop(context);
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
                 ),
                 child: Text(login ? "Zaloguj się" : "Załóż konto"),
               ),
-              Padding(
-                padding: EdgeInsets.only(left: 5),
-                child: ElevatedButton(
-                  onPressed: () {
-                    loginAno();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                  ),
-                  child: Text("Zaloguj anonimowo"),
-                ),
-              ), // Przycisk logowania anonimowego
             ],
           ),
           OutlinedButton(
