@@ -52,7 +52,7 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.green,
-        title: Text('Zarejestruj się'),
+        title: Text(login? 'Zaloguj się' : 'Zarejestruj się'),
       ), // Pasek górny
       body: Column(
         children: [
