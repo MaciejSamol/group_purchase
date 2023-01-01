@@ -43,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
       print(userCredential.user);
 
       // create a new document for the user with the uid
-      await DatabaseService(uid: userCredential.user!.uid).updateUserData(
+      await DatabaseService(uid: userCredential.user!.email).updateUserData(
           userCredential.user?.displayName,
           userCredential.user!.email,
           userCredential.user!.uid);

@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'home_page.dart';
+import 'friend_list.dart';
 
 class LogoutPage extends StatefulWidget {
   final Function(User?) onSignOut;
@@ -21,7 +22,7 @@ class _LogoutPageState extends State<LogoutPage> {
   Future _getDataFromDatabase() async {
     await FirebaseFirestore.instance
         .collection('users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .doc(FirebaseAuth.instance.currentUser!.email)
         .get()
         .then((DocumentSnapshot documentSnapshot) async {
       if (documentSnapshot.exists) {
@@ -50,7 +51,7 @@ class _LogoutPageState extends State<LogoutPage> {
   Future _updateUserName() async {
     await FirebaseFirestore.instance
         .collection('users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .doc(FirebaseAuth.instance.currentUser!.email)
         .update({
       'name': userNameInput,
     });
@@ -114,6 +115,15 @@ class _LogoutPageState extends State<LogoutPage> {
       appBar: AppBar(
         title: Text("Profil"),
         backgroundColor: Colors.green,
+        actions: <Widget>[
+          IconButton(icon: Icon(Icons.people), onPressed: () {
+             Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => FriendListPage()),
+                  );
+          }),
+        ],
       ), // Pasek górny
       body: Column(
         children: [
