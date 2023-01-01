@@ -1,8 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:group_purchase/services/database.dart';
 
 import 'home_page.dart';
+import 'logout.dart';
 
 class LoginPage extends StatefulWidget {
   final Function(User?) onSignIn;
@@ -39,6 +41,13 @@ class _LoginPageState extends State<LoginPage> {
           .createUserWithEmailAndPassword(
               email: _controllerEmail.text, password: _controllerPassword.text);
       print(userCredential.user);
+
+      // create a new document for the user with the uid
+      await DatabaseService(uid: userCredential.user!.email).updateUserData(
+          userCredential.user?.displayName,
+          userCredential.user!.email,
+          userCredential.user!.uid);
+
       widget.onSignIn(userCredential.user);
     } on FirebaseAuthException catch (e) {
       setState(() {
@@ -52,7 +61,7 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.green,
-        title: Text('Zarejestruj się'),
+        title: Text(login ? 'Zaloguj się' : 'Zarejestruj się'),
       ), // Pasek górny
       body: Column(
         children: [

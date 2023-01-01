@@ -75,11 +75,11 @@ class _MainPageState extends State<MainPage> {
                       ),
                       child: Column(children: [
                         Padding(
-                          padding: const EdgeInsets.all(10.0),
+                          padding: const EdgeInsets.all(6.0),
                           child: Row(),
                         ),
                         Padding(
-                          padding: const EdgeInsets.all(10.0),
+                          padding: const EdgeInsets.all(6.0),
                           child: Row(
                             children: [
                               Text(
