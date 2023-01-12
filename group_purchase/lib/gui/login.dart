@@ -83,6 +83,10 @@ class _LoginPageState extends State<LoginPage> {
                   login ? loginUser() : createUser();
                   if (login == true) {
                     Navigator.pop(context);
+                  } else if (login == false) {
+                    setState(() {
+                      login = !login;
+                    });
                   }
                 },
                 style: ElevatedButton.styleFrom(

@@ -14,4 +14,23 @@ class DatabaseService {
       'id': id,
     });
   }
+
+  getUserByEmail(String? email) {
+    return FirebaseFirestore.instance
+        .collection('users')
+        .where('email', isEqualTo: email)
+        .get();
+  }
+
+  Future sendFriendRequest(
+      String? currentUserEmail, String? friendEmail) async {
+    return await userCollection
+        .doc(friendEmail)
+        .collection('requests')
+        .doc(currentUserEmail)
+        .set({
+      'requestFrom': currentUserEmail,
+      'requestTo': friendEmail,
+    });
+  }
 }

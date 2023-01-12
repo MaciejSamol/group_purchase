@@ -1,6 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:group_purchase/gui/add_friend.dart';
+import 'package:group_purchase/gui/friend_requests.dart';
 import 'package:group_purchase/services/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -36,13 +38,26 @@ class _FriendListPageState extends State<FriendListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Lista Znajomych"),
+        title: Text("Lista znajomych"),
         backgroundColor: Colors.green,
         actions: <Widget>[
           IconButton(
               icon: Icon(Icons.add),
               onPressed: () {
-                // Funkcja odpowiadająca za dodanie znajomego poprzez wprowadzenie jego e-maila i wysłanie zaproszenia
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            AddFriendScreen())); // Funkcja odpowiadająca za dodanie znajomego poprzez wprowadzenie jego e-maila i wysłanie zaproszenia
+              }),
+          IconButton(
+              icon: Icon(Icons.question_mark),
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            FriendRequestScreen())); // Funkcja odpowiadająca za akceptowanie otrzymanych zaproszeń
               }),
         ],
       ),
