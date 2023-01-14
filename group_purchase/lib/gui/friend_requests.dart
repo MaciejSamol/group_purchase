@@ -117,6 +117,11 @@ class _RequestTileState extends State<RequestTile> {
                     .userName); // funkcja odpowiedzialna za akceptację friend requesta
             deleteRequest(widget.friendEmail);
             setState(() {});
+            showDialog(
+              context: context,
+              builder: (BuildContext context) =>
+                  _buildPopupDialogAccepted(context),
+            );
           },
           child: Container(
             decoration: BoxDecoration(
@@ -133,6 +138,11 @@ class _RequestTileState extends State<RequestTile> {
             deleteRequest(widget
                 .friendEmail); // funkcja odpowiedzialna za odrzucenie friend requesta
             setState(() {});
+            showDialog(
+              context: context,
+              builder: (BuildContext context) =>
+                  _buildPopupDialogDeleted(context),
+            );
           },
           child: Container(
             decoration: BoxDecoration(
@@ -159,5 +169,41 @@ class _RequestTileState extends State<RequestTile> {
     DatabaseService(uid: FirebaseAuth.instance.currentUser!.email)
         .deleteFriendRequest(
             FirebaseAuth.instance.currentUser!.email, friendEmail);
+  }
+
+  Widget _buildPopupDialogDeleted(BuildContext context) {
+    return new AlertDialog(
+      title: const Text('Usunięto zaproszenie'),
+      content: new Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+      ),
+      actions: <Widget>[
+        ElevatedButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: const Text('Zamknij'),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPopupDialogAccepted(BuildContext context) {
+    return new AlertDialog(
+      title: const Text('Zaakceptowano zaproszenie'),
+      content: new Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+      ),
+      actions: <Widget>[
+        ElevatedButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: const Text('Zamknij'),
+        ),
+      ],
+    );
   }
 }

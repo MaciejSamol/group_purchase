@@ -114,6 +114,11 @@ class _FriendListTileState extends State<FriendListTile> {
             deleteFriend(widget
                 .friendEmail); //Funkcja odpowiedzialna za kasowanie znajomych
             setState(() {});
+            showDialog(
+              context: context,
+              builder: (BuildContext context) =>
+                  _buildPopupDialogDeleted(context),
+            );
           },
           child: Container(
             decoration: BoxDecoration(
@@ -134,5 +139,23 @@ class _FriendListTileState extends State<FriendListTile> {
             FirebaseAuth.instance.currentUser!.email, friendEmail);
     DatabaseService(uid: friendEmail).deleteFriendFriend(
         FirebaseAuth.instance.currentUser!.email, friendEmail);
+  }
+
+  Widget _buildPopupDialogDeleted(BuildContext context) {
+    return new AlertDialog(
+      title: const Text('Usunięto znajomego z listy'),
+      content: new Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+      ),
+      actions: <Widget>[
+        ElevatedButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: const Text('Zamknij'),
+        ),
+      ],
+    );
   }
 }

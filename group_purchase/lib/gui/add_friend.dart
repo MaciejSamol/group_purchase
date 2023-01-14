@@ -181,8 +181,16 @@ class _SearchTileState extends State<SearchTile> {
             if (existance == false) {
               sendRequest(widget
                   .friendEmail); // funkcja odpowiedzialna za wysłanie friend requesta
+              showDialog(
+                context: context,
+                builder: (BuildContext context) => _buildPopupDialog(context),
+              );
             } else {
-              print('juz wyslano');
+              showDialog(
+                context: context,
+                builder: (BuildContext context) =>
+                    _buildPopupDialogRepeat(context),
+              );
             }
           },
           child: Container(
@@ -202,5 +210,41 @@ class _SearchTileState extends State<SearchTile> {
     DatabaseService(uid: FirebaseAuth.instance.currentUser!.email)
         .sendFriendRequest(FirebaseAuth.instance.currentUser!.email,
             widget.currentUserName, friendEmail);
+  }
+
+  Widget _buildPopupDialog(BuildContext context) {
+    return new AlertDialog(
+      title: const Text('Wysłano zaproszenie'),
+      content: new Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+      ),
+      actions: <Widget>[
+        ElevatedButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: const Text('Zamknij'),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPopupDialogRepeat(BuildContext context) {
+    return new AlertDialog(
+      title: const Text('Już wysłano zaproszenie'),
+      content: new Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+      ),
+      actions: <Widget>[
+        ElevatedButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: const Text('Zamknij'),
+        ),
+      ],
+    );
   }
 }
