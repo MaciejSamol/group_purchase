@@ -15,9 +15,41 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
   TextEditingController searchTextEditingController =
       new TextEditingController();
 
+  String name = '';
+
+  Future _getDataFromDatabase() async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.email)
+        .get()
+        .then((DocumentSnapshot documentSnapshot) async {
+      if (documentSnapshot.exists) {
+        setState(() {
+          name = '${documentSnapshot.get('name')}';
+        });
+      } else {
+        print('Document does not exist on the database');
+      }
+    });
+  }
+
+  bool friendExistance = false;
+  Future _checkIfFriendExists() async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.email)
+        .collection('friends')
+        .doc(searchTextEditingController.text)
+        .get()
+        .then((DocumentSnapshot documentSnapshot) async {
+      friendExistance = documentSnapshot.exists;
+    });
+  }
+
   dynamic searchSnapshot;
 
   initiateSearch() {
+    _getDataFromDatabase();
     if (searchTextEditingController.text !=
         FirebaseAuth.instance.currentUser!.email) {
       databaseService
@@ -33,7 +65,7 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
   }
 
   Widget searchList() {
-    return searchSnapshot != null
+    return searchSnapshot != null && friendExistance != true
         ? ListView.builder(
             itemCount: searchSnapshot.docs.length,
             shrinkWrap: true,
@@ -41,6 +73,7 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
               return SearchTile(
                 friendName: searchSnapshot.docs[index].data()['name']!,
                 friendEmail: searchSnapshot.docs[index].data()['email']!,
+                currentUserName: name,
               );
             })
         : Container();
@@ -72,6 +105,7 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
+                      _checkIfFriendExists();
                       initiateSearch();
                     },
                     child: Container(
@@ -99,11 +133,34 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
   }
 }
 
-class SearchTile extends StatelessWidget {
+class SearchTile extends StatefulWidget {
   final String friendName;
   final String friendEmail;
+  final String currentUserName;
   const SearchTile(
-      {super.key, required this.friendName, required this.friendEmail});
+      {super.key,
+      required this.friendName,
+      required this.friendEmail,
+      required this.currentUserName});
+
+  @override
+  State<SearchTile> createState() => _SearchTileState();
+}
+
+bool existance = false;
+
+class _SearchTileState extends State<SearchTile> {
+  Future _checkIfExists() async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.friendEmail)
+        .collection('requests')
+        .doc(FirebaseAuth.instance.currentUser!.email)
+        .get()
+        .then((DocumentSnapshot documentSnapshot) async {
+      existance = documentSnapshot.exists;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -113,14 +170,20 @@ class SearchTile extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(friendName),
-            Text(friendEmail),
+            Text(widget.friendName),
+            Text(widget.friendEmail),
           ],
         ),
         Spacer(),
         GestureDetector(
           onTap: () {
-            sendRequest(friendEmail); // funkcja odpowiedzialna za wysłanie friend requesta
+            _checkIfExists();
+            if (existance == false) {
+              sendRequest(widget
+                  .friendEmail); // funkcja odpowiedzialna za wysłanie friend requesta
+            } else {
+              print('juz wyslano');
+            }
           },
           child: Container(
             decoration: BoxDecoration(
@@ -134,8 +197,10 @@ class SearchTile extends StatelessWidget {
       ]),
     );
   }
-  
+
   sendRequest(String friendEmail) {
-    DatabaseService(uid: FirebaseAuth.instance.currentUser!.email).sendFriendRequest(FirebaseAuth.instance.currentUser!.email, friendEmail); 
+    DatabaseService(uid: FirebaseAuth.instance.currentUser!.email)
+        .sendFriendRequest(FirebaseAuth.instance.currentUser!.email,
+            widget.currentUserName, friendEmail);
   }
 }
