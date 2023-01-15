@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/animation.dart';
 
 class DatabaseService {
   final String? uid;
@@ -7,6 +8,7 @@ class DatabaseService {
   final CollectionReference userCollection =
       FirebaseFirestore.instance.collection('users');
 
+  // Funkcja tworząca kolekcję użytkowników
   Future updateUserData(String? name, String? email, String? id) async {
     return await userCollection.doc(uid).set({
       'name': name,
@@ -15,6 +17,7 @@ class DatabaseService {
     });
   }
 
+  // Funkcja stworzona w celu wyszukiwania użytkownika w bazie za pomocą emaila
   getUserByEmail(String? email) {
     return FirebaseFirestore.instance
         .collection('users')
@@ -83,8 +86,7 @@ class DatabaseService {
   }
 
   //Funkcja odpowiedzialna za usunięcie z listy znajomych po stronie użytkownika
-  Future deleteFriendUser(
-      String? currentUserEmail, String? friendEmail) async {
+  Future deleteFriendUser(String? currentUserEmail, String? friendEmail) async {
     return await userCollection
         .doc(currentUserEmail)
         .collection('friends')
@@ -100,5 +102,17 @@ class DatabaseService {
         .collection('friends')
         .doc(currentUserEmail)
         .delete();
+  }
+
+  //Funkcja tworząca kolekcję list użytkownika
+  Future addNewList(String? listName) async {
+    return await userCollection.doc(uid).collection('lists').doc().set({
+      'listName': listName,
+    });
+  }
+
+  //Funkcja pobierająca listy z bazy
+  getLists(String? currentUserEmail) {
+    return userCollection.doc(currentUserEmail).collection('lists').get();
   }
 }
