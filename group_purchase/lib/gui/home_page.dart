@@ -43,17 +43,21 @@ class _MainPageState extends State<MainPage> {
   }
 
   Widget listWidget() {
-    initiateListLoad();
-    return listSnapshot != null
-        ? ListView.builder(
-            itemCount: listSnapshot.docs.length,
-            shrinkWrap: true,
-            itemBuilder: (context, index) {
-              return ListTile(
-                listName: listSnapshot.docs[index].data()['listName']!,
-              );
-            })
-        : Container();
+    if (user != null) {
+      initiateListLoad();
+      return listSnapshot != null
+          ? ListView.builder(
+              itemCount: listSnapshot.docs.length,
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  listName: listSnapshot.docs[index].data()['listName']!,
+                );
+              })
+          : Container();
+    } else {
+      return Container();
+    }
   }
 
   @override
