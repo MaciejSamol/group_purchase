@@ -52,11 +52,12 @@ class _MainPageState extends State<MainPage> {
               itemBuilder: (context, index) {
                 return ListTile(
                   listName: listSnapshot.docs[index].data()['listName']!,
+                  id: listSnapshot.docs[index].reference.id.toString(),
                 );
               })
           : Container();
     } else {
-      return Container();
+      return Container(); // W przyszłości listy dla użytkowników bez konta
     }
   }
 
@@ -107,7 +108,8 @@ class _MainPageState extends State<MainPage> {
 
 class ListTile extends StatefulWidget {
   final String listName;
-  const ListTile({super.key, required this.listName});
+  final String id;
+  const ListTile({super.key, required this.listName, required this.id});
 
   @override
   State<ListTile> createState() => _ListTileState();
@@ -123,6 +125,7 @@ class _ListTileState extends State<ListTile> {
           MaterialPageRoute(
               builder: (context) => ListViewPage(
                     listName: widget.listName,
+                    index: widget.id,
                   )),
         );
       },

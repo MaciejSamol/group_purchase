@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -5,7 +6,8 @@ import 'package:group_purchase/services/database.dart';
 
 class ListViewPage extends StatefulWidget {
   final String listName;
-  const ListViewPage({super.key, required this.listName});
+  final String index;
+  const ListViewPage({super.key, required this.listName, required this.index});
 
   @override
   State<ListViewPage> createState() => _ListViewPageState();
@@ -13,7 +15,8 @@ class ListViewPage extends StatefulWidget {
 
 class _ListViewPageState extends State<ListViewPage> {
   DatabaseService databaseService = new DatabaseService();
-  TextEditingController listTextEditingController = new TextEditingController();
+  TextEditingController productTextEditingController =
+      new TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +29,8 @@ class _ListViewPageState extends State<ListViewPage> {
               icon: Icon(Icons.delete),
               onPressed: () {
                 //Funkcja odpowiedzialna za kasowanie całej listy
+                deleteList();
+                Navigator.pop(context);
               }),
         ],
       ),
@@ -50,12 +55,27 @@ class _ListViewPageState extends State<ListViewPage> {
     );
   }
 
+  deleteList() {
+    DatabaseService(uid: FirebaseAuth.instance.currentUser!.email)
+        .deleteList(FirebaseAuth.instance.currentUser!.email, widget.index);
+  }
+
   Widget _buildPopupDialog(BuildContext context) {
+    int productNr = 1;
     return AlertDialog(
       title: const Text('Dodawanie produktu'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextField(
+            controller: productTextEditingController,
+            decoration: InputDecoration(
+              hintText: 'wprowadź nazwę produktu',
+              border: InputBorder.none,
+            ),
+          ),
+        ],
       ),
       actions: <Widget>[
         ElevatedButton(
@@ -64,6 +84,7 @@ class _ListViewPageState extends State<ListViewPage> {
           ),
           onPressed: () {
             //Dodawanie produktu
+            addProduct(productTextEditingController.text);
             Navigator.of(context).pop();
           },
           child: const Text('Dodaj'),
@@ -79,6 +100,11 @@ class _ListViewPageState extends State<ListViewPage> {
         ),
       ],
     );
+  }
+
+  addProduct(String product) {
+    DatabaseService(uid: FirebaseAuth.instance.currentUser!.email).addProduct(
+        FirebaseAuth.instance.currentUser!.email, widget.index, product);
   }
 }
 

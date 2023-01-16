@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/animation.dart';
 
 class DatabaseService {
@@ -19,8 +20,7 @@ class DatabaseService {
 
   // Funkcja stworzona w celu wyszukiwania użytkownika w bazie za pomocą emaila
   getUserByEmail(String? email) {
-    return FirebaseFirestore.instance
-        .collection('users')
+    return userCollection
         .where('email', isEqualTo: email)
         .get();
   }
@@ -115,4 +115,28 @@ class DatabaseService {
   getLists(String? currentUserEmail) {
     return userCollection.doc(currentUserEmail).collection('lists').get();
   }
+
+  //Funkcja kasująca całą listę
+  Future deleteList(String? currentUserEmail, String? index) async {
+    return await userCollection
+        .doc(currentUserEmail)
+        .collection('lists')
+        .doc(index)
+        .delete();
+  }
+
+  //Funkcja odpowiedzialna za dodawanie produktu do bazy danych
+  Future addProduct(
+      String? currentUserEmail, String? index, String product) async {
+    return await userCollection
+        .doc(currentUserEmail)
+        .collection('lists')
+        .doc(index)
+        .set({
+      product: product,
+    }, SetOptions(merge: true));
+  }
+
+  //Funkcja pobierająca produkty z listy
+  
 }
