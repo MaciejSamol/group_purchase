@@ -78,7 +78,7 @@ class _ListViewPageState extends State<ListViewPage> {
         child: Column(
           children: [
             productsWidget()
-            // wuwołanie
+            // wywołanie
           ],
         ),
       ),
@@ -127,6 +127,9 @@ class _ListViewPageState extends State<ListViewPage> {
           onPressed: () {
             //Dodawanie produktu
             addProduct(productTextEditingController.text);
+            setState(() {
+              productTextEditingController = new TextEditingController();
+            });
             // Kasowannie zawartości productTextEditingController
             Navigator.of(context).pop();
           },
