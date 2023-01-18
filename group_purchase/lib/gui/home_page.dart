@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:group_purchase/gui/add_new_list.dart';
 import 'package:group_purchase/gui/list_view.dart';
+import 'package:group_purchase/gui/settings.dart';
 import 'package:group_purchase/services/database.dart';
 
 import 'login.dart';
@@ -51,7 +52,6 @@ class _MainPageState extends State<MainPage> {
               shrinkWrap: true,
               itemBuilder: (context, index) {
                 return ListTile(
-                  listName: listSnapshot.docs[index].data()['listName']!,
                   id: listSnapshot.docs[index].reference.id.toString(),
                 );
               })
@@ -80,12 +80,22 @@ class _MainPageState extends State<MainPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => LogoutPage(
-                          onSignOut: (userCred) => onRefresh(userCred))),
+                      builder: (context) => LogoutPage()),
                 );
               }
             }),
         title: const Text('Moje listy'),
+        actions: <Widget>[
+          IconButton(
+              icon: Icon(Icons.settings),
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => Settings(
+                            onSignOut: (userCred) => onRefresh(userCred))));
+              }),
+        ],
       ),
       body: Container(
         child: Column(
@@ -107,9 +117,8 @@ class _MainPageState extends State<MainPage> {
 }
 
 class ListTile extends StatefulWidget {
-  final String listName;
   final String id;
-  const ListTile({super.key, required this.listName, required this.id});
+  const ListTile({super.key, required this.id});
 
   @override
   State<ListTile> createState() => _ListTileState();
@@ -124,7 +133,6 @@ class _ListTileState extends State<ListTile> {
           context,
           MaterialPageRoute(
               builder: (context) => ListViewPage(
-                    listName: widget.listName,
                     index: widget.id,
                   )),
         );
@@ -154,7 +162,7 @@ class _ListTileState extends State<ListTile> {
               child: Row(
                 children: [
                   Text(
-                    widget.listName,
+                    widget.id,
                     style: TextStyle(fontSize: 20),
                   ),
                   Spacer(

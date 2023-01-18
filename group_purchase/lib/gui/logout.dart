@@ -6,8 +6,7 @@ import 'home_page.dart';
 import 'friend_list.dart';
 
 class LogoutPage extends StatefulWidget {
-  final Function(User?) onSignOut;
-  LogoutPage({required this.onSignOut});
+  LogoutPage({super.key});
 
   @override
   State<LogoutPage> createState() => _LogoutPageState();
@@ -35,11 +34,6 @@ class _LogoutPageState extends State<LogoutPage> {
         print('Document does not exist on the database');
       }
     });
-  }
-
-  Future<void> logout() async {
-    await FirebaseAuth.instance.signOut();
-    widget.onSignOut(null);
   }
 
   @override
@@ -157,16 +151,6 @@ class _LogoutPageState extends State<LogoutPage> {
             style: const TextStyle(
               fontSize: 15.0,
             ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              logout();
-              Navigator.pop(context);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green,
-            ),
-            child: Text("Wyloguj się"),
           ),
         ],
       ),
