@@ -14,17 +14,6 @@ class ListViewPage extends StatefulWidget {
   State<ListViewPage> createState() => _ListViewPageState();
 }
 
-class LowerCaseTextFormatter extends TextInputFormatter {
-  @override
-  TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue, TextEditingValue newValue) {
-    return TextEditingValue(
-      text: newValue.text.toLowerCase(),
-      selection: newValue.selection,
-    );
-  }
-}
-
 class _ListViewPageState extends State<ListViewPage> {
   DatabaseService databaseService = new DatabaseService();
   TextEditingController productTextEditingController =
@@ -110,7 +99,6 @@ class _ListViewPageState extends State<ListViewPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TextField(
-            inputFormatters: [LowerCaseTextFormatter()],
             controller: productTextEditingController,
             decoration: InputDecoration(
               hintText: 'wprowadź nazwę produktu',
@@ -126,7 +114,7 @@ class _ListViewPageState extends State<ListViewPage> {
           ),
           onPressed: () {
             //Dodawanie produktu
-            addProduct(productTextEditingController.text);
+            addProduct(productTextEditingController.text.capitalize());
             setState(() {
               productTextEditingController = new TextEditingController();
             });
@@ -195,5 +183,11 @@ class _ProductTileState extends State<ProductTile> {
   deleteProduct(String index, String name) {
     DatabaseService(uid: FirebaseAuth.instance.currentUser!.email)
         .deleteProduct(FirebaseAuth.instance.currentUser!.email, index, name);
+  }
+}
+
+extension MyExtension on String {
+  String capitalize() {
+    return "${this[0].toUpperCase()}${this.substring(1).toLowerCase()}";
   }
 }
