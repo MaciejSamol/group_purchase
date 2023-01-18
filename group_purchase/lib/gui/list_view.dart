@@ -145,22 +145,43 @@ class _ListViewPageState extends State<ListViewPage> {
 class ProductTile extends StatefulWidget {
   final String name;
   final String index;
-  const ProductTile({super.key, required this.name, required this.index});
+  const ProductTile({
+    super.key,
+    required this.name,
+    required this.index,
+  });
 
   @override
   State<ProductTile> createState() => _ProductTileState();
 }
 
 class _ProductTileState extends State<ProductTile> {
+  bool? _isChecked = false;
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
       child: Row(children: [
+        Column(
+          children: [
+            Checkbox(
+              value: _isChecked,
+              activeColor: Colors.green,
+              onChanged: (value) {
+                setState(() {
+                  _isChecked = value;
+                });
+              },
+            ),
+          ],
+        ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(widget.name),
+            Text(
+              widget.name,
+              style: TextStyle(fontSize: 15),
+            ),
             //Wyświetlanie produktu w kafelku
           ],
         ),

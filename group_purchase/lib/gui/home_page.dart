@@ -79,8 +79,7 @@ class _MainPageState extends State<MainPage> {
               } else {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => LogoutPage()),
+                  MaterialPageRoute(builder: (context) => LogoutPage()),
                 );
               }
             }),
