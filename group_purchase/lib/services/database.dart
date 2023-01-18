@@ -20,9 +20,7 @@ class DatabaseService {
 
   // Funkcja stworzona w celu wyszukiwania użytkownika w bazie za pomocą emaila
   getUserByEmail(String? email) {
-    return userCollection
-        .where('email', isEqualTo: email)
-        .get();
+    return userCollection.where('email', isEqualTo: email).get();
   }
 
   // Funkcja bazy danych odpowiedzialna za przesłanie zaproszenia
@@ -106,9 +104,11 @@ class DatabaseService {
 
   //Funkcja tworząca kolekcję list użytkownika
   Future addNewList(String? listName) async {
-    return await userCollection.doc(uid).collection('lists').doc().set({
-      'listName': listName,
-    });
+    return await userCollection
+        .doc(uid)
+        .collection('lists')
+        .doc(listName)
+        .set({});
   }
 
   //Funkcja pobierająca listy z bazy
@@ -132,11 +132,32 @@ class DatabaseService {
         .doc(currentUserEmail)
         .collection('lists')
         .doc(index)
+        .collection('products')
+        .doc(product)
         .set({
-      product: product,
+      'name': product,
     }, SetOptions(merge: true));
   }
 
   //Funkcja pobierająca produkty z listy
-  
+  getProducts(String? currentUserEmail, String? index) {
+    return userCollection
+        .doc(currentUserEmail)
+        .collection('lists')
+        .doc(index)
+        .collection('products')
+        .get();
+  }
+
+  //Funkcja kasująca produkt z listy
+  Future deleteProduct(
+      String? currentUserEmail, String? index, String? name) async {
+    return await userCollection
+        .doc(currentUserEmail)
+        .collection('lists')
+        .doc(index)
+        .collection('products')
+        .doc(name)
+        .delete();
+  }
 }
