@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:group_purchase/gui/add_new_list.dart';
 import 'package:group_purchase/gui/list_view.dart';
 import 'package:group_purchase/gui/settings.dart';
 import 'package:group_purchase/services/database.dart';
@@ -17,6 +16,8 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   DatabaseService databaseService = new DatabaseService();
+  TextEditingController listNameTextEditingController =
+      new TextEditingController();
   User? user;
   @override
   void initState() {
@@ -50,9 +51,10 @@ class _MainPageState extends State<MainPage> {
           ? ListView.builder(
               itemCount: listSnapshot.docs.length,
               shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
               itemBuilder: (context, index) {
                 return ListTile(
-                  id: listSnapshot.docs[index].reference.id.toString(),
+                  id: listSnapshot.docs[index].data()['listId']!,
                 );
               })
           : Container();
@@ -97,20 +99,96 @@ class _MainPageState extends State<MainPage> {
         ],
       ),
       body: Container(
-        child: Column(
-          children: [listWidget()],
+        child: SingleChildScrollView(
+          child: listWidget(),
         ),
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.green,
         child: const Icon(Icons.add),
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => AddNewListPage()),
+          showDialog(
+            context: context,
+            builder: (BuildContext context) =>
+                _buildPopupDialogNewList(context),
           );
         },
       ),
+    );
+  }
+
+  addList(String? listName) {
+    DatabaseService(uid: FirebaseAuth.instance.currentUser!.email)
+        .addNewList(listName, [FirebaseAuth.instance.currentUser!.email]);
+  }
+
+  Widget _buildPopupDialogNewList(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Dodawanie listy'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextField(
+            controller: listNameTextEditingController,
+            decoration: InputDecoration(
+              hintText: 'wprowadź nazwę listy',
+              border: InputBorder.none,
+            ),
+          ),
+        ],
+      ),
+      actions: <Widget>[
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.green,
+          ),
+          onPressed: () {
+            //Dodawanie produktu
+            if (listNameTextEditingController.text != '') {
+              addList(listNameTextEditingController.text.capitalize());
+              setState(() {
+                listNameTextEditingController = new TextEditingController();
+              });
+              // Kasowannie zawartości listNameTextEditingController
+              Navigator.of(context).pop();
+            } else {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) => _buildPopupDialog(context),
+              );
+            }
+          },
+          child: const Text('Dodaj'),
+        ),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.red,
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: const Text('Zamknij'),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPopupDialog(BuildContext context) {
+    return new AlertDialog(
+      title: const Text('Nie podano nazwy listy'),
+      content: new Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+      ),
+      actions: <Widget>[
+        ElevatedButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: const Text('Zamknij'),
+        ),
+      ],
     );
   }
 }
@@ -167,6 +245,7 @@ class _ListTileState extends State<ListTile> {
                   Spacer(
                     flex: 1,
                   ),
+                  // Zliczanie produktów
                   Text(
                     "0/0",
                     style: TextStyle(fontSize: 20),

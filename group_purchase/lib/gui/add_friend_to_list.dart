@@ -1,65 +1,49 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:group_purchase/gui/add_friend.dart';
+import 'package:group_purchase/gui/friend_requests.dart';
 import 'package:group_purchase/services/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class FriendRequestScreen extends StatefulWidget {
-  const FriendRequestScreen({super.key});
+class AddFriendToListPage extends StatefulWidget {
+  final String index;
+  const AddFriendToListPage({super.key, required this.index});
 
   @override
-  State<FriendRequestScreen> createState() => _FriendRequestScreenState();
+  State<AddFriendToListPage> createState() => _AddFriendToListPageState();
 }
 
-class _FriendRequestScreenState extends State<FriendRequestScreen> {
+class _AddFriendToListPageState extends State<AddFriendToListPage> {
   DatabaseService databaseService = new DatabaseService();
 
-  String name = '';
+  dynamic addFriendToListSnapshot;
 
-  Future _getDataFromDatabase() async {
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(FirebaseAuth.instance.currentUser!.email)
-        .get()
-        .then((DocumentSnapshot documentSnapshot) async {
-      if (documentSnapshot.exists) {
-        if (!mounted) return;
-        setState(() {
-          name = '${documentSnapshot.get('name')}';
-        });
-      } else {
-        print('Document does not exist on the database');
-      }
-    });
-  }
-
-  dynamic requestSnapshot;
-
-  Future initiateRequestLoad() async {
+  Future initiateAddFriendToListLoad() async {
     await databaseService
-        .getFriendRequests(FirebaseAuth.instance.currentUser!.email)
+        .getFriendList(FirebaseAuth.instance.currentUser!.email)
         .then((val) {
       if (!mounted) return;
       setState(() {
-        requestSnapshot = val;
+        addFriendToListSnapshot = val;
       });
     });
   }
 
-  Widget requestList() {
-    initiateRequestLoad();
-    _getDataFromDatabase();
-    return requestSnapshot != null
+  Widget addFriendToList() {
+    initiateAddFriendToListLoad();
+    return addFriendToListSnapshot != null
         ? ListView.builder(
-            itemCount: requestSnapshot.docs.length,
+            itemCount: addFriendToListSnapshot.docs.length,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
-              return RequestTile(
+              return AddFriendToListTile(
                 friendName:
-                    requestSnapshot.docs[index].data()['requestFromName']!,
+                    addFriendToListSnapshot.docs[index].data()['friendName']!,
                 friendEmail:
-                    requestSnapshot.docs[index].data()['requestFromEmail']!,
-                userName: name,
+                    addFriendToListSnapshot.docs[index].data()['friendEmail']!,
+                index: widget.index,
               );
             })
         : Container();
@@ -69,33 +53,34 @@ class _FriendRequestScreenState extends State<FriendRequestScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Otrzymane zaproszenia"),
+        title: Text("Lista znajomych"),
         backgroundColor: Colors.green,
-      ), // Pasek górny
+      ),
       body: Container(
         child: SingleChildScrollView(
-          child: requestList(),
+          child: addFriendToList(),
         ),
       ),
     );
   }
 }
 
-class RequestTile extends StatefulWidget {
+class AddFriendToListTile extends StatefulWidget {
   final String friendName;
   final String friendEmail;
-  final String userName;
-  const RequestTile(
-      {super.key,
-      required this.friendName,
-      required this.friendEmail,
-      required this.userName});
+  final String index;
+  const AddFriendToListTile({
+    super.key,
+    required this.friendName,
+    required this.friendEmail,
+    required this.index,
+  });
 
   @override
-  State<RequestTile> createState() => _RequestTileState();
+  State<AddFriendToListTile> createState() => _AddFriendToListTileState();
 }
 
-class _RequestTileState extends State<RequestTile> {
+class _AddFriendToListTileState extends State<AddFriendToListTile> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -111,17 +96,12 @@ class _RequestTileState extends State<RequestTile> {
         Spacer(),
         GestureDetector(
           onTap: () {
-            acceptRequest(
-                widget.friendEmail,
-                widget.friendName,
-                widget
-                    .userName); // funkcja odpowiedzialna za akceptację friend requesta
-            deleteRequest(widget.friendEmail);
+            //Funkcja odpowiedzialna za kdodawanie znajomego do listy
+            addFriendToList();
             setState(() {});
             showDialog(
               context: context,
-              builder: (BuildContext context) =>
-                  _buildPopupDialogAccepted(context),
+              builder: (BuildContext context) => _buildPopupDialogAdd(context),
             );
           },
           child: Container(
@@ -130,14 +110,14 @@ class _RequestTileState extends State<RequestTile> {
               borderRadius: BorderRadius.circular(30),
             ),
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            child: Text("Akceptuj"),
+            child: Text("Dodaj do listy"),
           ),
         ),
         Spacer(),
         GestureDetector(
           onTap: () {
-            deleteRequest(widget
-                .friendEmail); // funkcja odpowiedzialna za odrzucenie friend requesta
+            //Funkcja odpowiedzialna za kasowanie znajomego z listy
+            removeFriendFromList();
             setState(() {});
             showDialog(
               context: context,
@@ -151,30 +131,26 @@ class _RequestTileState extends State<RequestTile> {
               borderRadius: BorderRadius.circular(30),
             ),
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            child: Text("Odrzuć"),
+            child: Text("Usuń z listy"),
           ),
-        )
+        ),
       ]),
     );
   }
 
-  acceptRequest(String friendEmail, String friendName, String name) {
+  addFriendToList() {
     DatabaseService(uid: FirebaseAuth.instance.currentUser!.email)
-        .acceptFriendRequestUser(
-            FirebaseAuth.instance.currentUser!.email, friendEmail, friendName);
-    DatabaseService(uid: friendEmail).acceptFriendRequestFriend(
-        FirebaseAuth.instance.currentUser!.email, name, friendEmail);
+        .addFriendToList(widget.index, [widget.friendEmail]);
   }
 
-  deleteRequest(String friendEmail) {
+  removeFriendFromList() {
     DatabaseService(uid: FirebaseAuth.instance.currentUser!.email)
-        .deleteFriendRequest(
-            FirebaseAuth.instance.currentUser!.email, friendEmail);
+        .deleteFriendFromList(widget.index, [widget.friendEmail]);
   }
 
-  Widget _buildPopupDialogDeleted(BuildContext context) {
+  Widget _buildPopupDialogAdd(BuildContext context) {
     return new AlertDialog(
-      title: const Text('Usunięto zaproszenie'),
+      title: const Text('Dodano znajomego do listy zakupowej'),
       content: new Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -190,9 +166,9 @@ class _RequestTileState extends State<RequestTile> {
     );
   }
 
-  Widget _buildPopupDialogAccepted(BuildContext context) {
+  Widget _buildPopupDialogDeleted(BuildContext context) {
     return new AlertDialog(
-      title: const Text('Zaakceptowano zaproszenie'),
+      title: const Text('Usunięto znajomego z listy zakupowej'),
       content: new Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:group_purchase/gui/add_friend_to_list.dart';
 import 'package:group_purchase/services/database.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ListViewPage extends StatefulWidget {
   final String index;
@@ -18,6 +20,24 @@ class _ListViewPageState extends State<ListViewPage> {
   DatabaseService databaseService = new DatabaseService();
   TextEditingController productTextEditingController =
       new TextEditingController();
+
+  String userName = '';
+
+  Future _getDataFromDatabase() async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.email)
+        .get()
+        .then((DocumentSnapshot documentSnapshot) async {
+      if (documentSnapshot.exists) {
+        setState(() {
+          userName = '${documentSnapshot.get('name')}';
+        });
+      } else {
+        print('Document does not exist on the database');
+      }
+    });
+  }
 
   dynamic productSnapshot;
 
@@ -38,13 +58,22 @@ class _ListViewPageState extends State<ListViewPage> {
         ? ListView.builder(
             itemCount: productSnapshot.docs.length,
             shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
               return ProductTile(
                 name: productSnapshot.docs[index].data()['name']!,
+                user: productSnapshot.docs[index].data()['addBy']!,
                 index: widget.index,
+                isChecked: productSnapshot.docs[index].data()['isChecked']!,
               );
             })
         : Container();
+  }
+
+  @override
+  void initState() {
+    _getDataFromDatabase();
+    super.initState();
   }
 
   @override
@@ -55,6 +84,17 @@ class _ListViewPageState extends State<ListViewPage> {
         title: Text(widget.index),
         actions: <Widget>[
           IconButton(
+              icon: Icon(Icons.share),
+              onPressed: () {
+                //Funkcja odpowiedzialna za udostępnianie listy znajomym
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AddFriendToListPage(
+                              index: widget.index,
+                            )));
+              }),
+          IconButton(
               icon: Icon(Icons.delete),
               onPressed: () {
                 //Funkcja odpowiedzialna za kasowanie całej listy
@@ -64,12 +104,9 @@ class _ListViewPageState extends State<ListViewPage> {
         ],
       ),
       body: Container(
-        child: Column(
-          children: [
-            productsWidget()
+        child: SingleChildScrollView(child: productsWidget()
             // wywołanie
-          ],
-        ),
+            ),
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.green,
@@ -78,7 +115,8 @@ class _ListViewPageState extends State<ListViewPage> {
           //Funkcja odpowiedzialna za wyświetlenie okna dodawania produktu
           showDialog(
             context: context,
-            builder: (BuildContext context) => _buildPopupDialog(context),
+            builder: (BuildContext context) =>
+                _buildPopupDialog(context, userName),
           );
         },
       ),
@@ -90,8 +128,7 @@ class _ListViewPageState extends State<ListViewPage> {
         .deleteList(FirebaseAuth.instance.currentUser!.email, widget.index);
   }
 
-  Widget _buildPopupDialog(BuildContext context) {
-    int productNr = 1;
+  Widget _buildPopupDialog(BuildContext context, String userName) {
     return AlertDialog(
       title: const Text('Dodawanie produktu'),
       content: Column(
@@ -114,7 +151,8 @@ class _ListViewPageState extends State<ListViewPage> {
           ),
           onPressed: () {
             //Dodawanie produktu
-            addProduct(productTextEditingController.text.capitalize());
+            addProduct(
+                productTextEditingController.text.capitalize(), userName);
             setState(() {
               productTextEditingController = new TextEditingController();
             });
@@ -136,19 +174,26 @@ class _ListViewPageState extends State<ListViewPage> {
     );
   }
 
-  addProduct(String product) {
+  addProduct(String product, String userName) {
     DatabaseService(uid: FirebaseAuth.instance.currentUser!.email).addProduct(
-        FirebaseAuth.instance.currentUser!.email, widget.index, product);
+        FirebaseAuth.instance.currentUser!.email,
+        widget.index,
+        product,
+        userName);
   }
 }
 
 class ProductTile extends StatefulWidget {
   final String name;
+  final String user;
   final String index;
+  final bool isChecked;
   const ProductTile({
     super.key,
     required this.name,
     required this.index,
+    required this.user,
+    required this.isChecked,
   });
 
   @override
@@ -156,7 +201,6 @@ class ProductTile extends StatefulWidget {
 }
 
 class _ProductTileState extends State<ProductTile> {
-  bool? _isChecked = false;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -165,11 +209,11 @@ class _ProductTileState extends State<ProductTile> {
         Column(
           children: [
             Checkbox(
-              value: _isChecked,
+              value: widget.isChecked,
               activeColor: Colors.green,
               onChanged: (value) {
                 setState(() {
-                  _isChecked = value;
+                  isCheckedUpdate(widget.index, widget.name, value);
                 });
               },
             ),
@@ -180,7 +224,11 @@ class _ProductTileState extends State<ProductTile> {
           children: [
             Text(
               widget.name,
-              style: TextStyle(fontSize: 15),
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+            ),
+            Text(
+              'Produkt dodany przez: ' + widget.user,
+              style: TextStyle(fontSize: 12),
             ),
             //Wyświetlanie produktu w kafelku
           ],
@@ -199,6 +247,11 @@ class _ProductTileState extends State<ProductTile> {
         )
       ]),
     );
+  }
+
+  isCheckedUpdate(String index, String product, bool? value) {
+    DatabaseService(uid: FirebaseAuth.instance.currentUser!.email)
+        .isCheckedUpdate(index, product, value);
   }
 
   deleteProduct(String index, String name) {
