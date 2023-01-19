@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:group_purchase/gui/add_friend_to_list.dart';
 import 'package:group_purchase/services/database.dart';
 
 class ListViewPage extends StatefulWidget {
@@ -18,6 +19,24 @@ class _ListViewPageState extends State<ListViewPage> {
   DatabaseService databaseService = new DatabaseService();
   TextEditingController productTextEditingController =
       new TextEditingController();
+
+  String userName = '';
+
+  Future _getDataFromDatabase() async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.email)
+        .get()
+        .then((DocumentSnapshot documentSnapshot) async {
+      if (documentSnapshot.exists) {
+        setState(() {
+          userName = '${documentSnapshot.get('name')}';
+        });
+      } else {
+        print('Document does not exist on the database');
+      }
+    });
+  }
 
   dynamic productSnapshot;
 
@@ -42,10 +61,17 @@ class _ListViewPageState extends State<ListViewPage> {
             itemBuilder: (context, index) {
               return ProductTile(
                 name: productSnapshot.docs[index].data()['name']!,
+                user: productSnapshot.docs[index].data()['addBy']!,
                 index: widget.index,
               );
             })
         : Container();
+  }
+
+  @override
+  void initState() {
+    _getDataFromDatabase();
+    super.initState();
   }
 
   @override
@@ -55,6 +81,17 @@ class _ListViewPageState extends State<ListViewPage> {
         backgroundColor: Colors.green,
         title: Text(widget.index),
         actions: <Widget>[
+          IconButton(
+              icon: Icon(Icons.share),
+              onPressed: () {
+                //Funkcja odpowiedzialna za udostępnianie listy znajomym
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AddFriendToListPage(
+                              index: widget.index,
+                            )));
+              }),
           IconButton(
               icon: Icon(Icons.delete),
               onPressed: () {
@@ -76,7 +113,8 @@ class _ListViewPageState extends State<ListViewPage> {
           //Funkcja odpowiedzialna za wyświetlenie okna dodawania produktu
           showDialog(
             context: context,
-            builder: (BuildContext context) => _buildPopupDialog(context),
+            builder: (BuildContext context) =>
+                _buildPopupDialog(context, userName),
           );
         },
       ),
@@ -88,7 +126,7 @@ class _ListViewPageState extends State<ListViewPage> {
         .deleteList(FirebaseAuth.instance.currentUser!.email, widget.index);
   }
 
-  Widget _buildPopupDialog(BuildContext context) {
+  Widget _buildPopupDialog(BuildContext context, String userName) {
     return AlertDialog(
       title: const Text('Dodawanie produktu'),
       content: Column(
@@ -111,7 +149,8 @@ class _ListViewPageState extends State<ListViewPage> {
           ),
           onPressed: () {
             //Dodawanie produktu
-            addProduct(productTextEditingController.text.capitalize());
+            addProduct(
+                productTextEditingController.text.capitalize(), userName);
             setState(() {
               productTextEditingController = new TextEditingController();
             });
@@ -133,19 +172,24 @@ class _ListViewPageState extends State<ListViewPage> {
     );
   }
 
-  addProduct(String product) {
+  addProduct(String product, String userName) {
     DatabaseService(uid: FirebaseAuth.instance.currentUser!.email).addProduct(
-        FirebaseAuth.instance.currentUser!.email, widget.index, product);
+        FirebaseAuth.instance.currentUser!.email,
+        widget.index,
+        product,
+        userName);
   }
 }
 
 class ProductTile extends StatefulWidget {
   final String name;
+  final String user;
   final String index;
   const ProductTile({
     super.key,
     required this.name,
     required this.index,
+    required this.user,
   });
 
   @override
@@ -177,7 +221,11 @@ class _ProductTileState extends State<ProductTile> {
           children: [
             Text(
               widget.name,
-              style: TextStyle(fontSize: 15),
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+            ),
+            Text(
+              'Produkt dodany przez: ' + widget.user,
+              style: TextStyle(fontSize: 12),
             ),
             //Wyświetlanie produktu w kafelku
           ],

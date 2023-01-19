@@ -54,7 +54,7 @@ class _MainPageState extends State<MainPage> {
               physics: const NeverScrollableScrollPhysics(),
               itemBuilder: (context, index) {
                 return ListTile(
-                  id: listSnapshot.docs[index].reference.id.toString(),
+                  id: listSnapshot.docs[index].data()['listId']!,
                 );
               })
           : Container();
@@ -119,7 +119,7 @@ class _MainPageState extends State<MainPage> {
 
   addList(String? listName) {
     DatabaseService(uid: FirebaseAuth.instance.currentUser!.email)
-        .addNewList(listName);
+        .addNewList(listName, [FirebaseAuth.instance.currentUser!.email]);
   }
 
   Widget _buildPopupDialogNewList(BuildContext context) {
@@ -245,6 +245,7 @@ class _ListTileState extends State<ListTile> {
                   Spacer(
                     flex: 1,
                   ),
+                  // Zliczanie produktów
                   Text(
                     "0/0",
                     style: TextStyle(fontSize: 20),

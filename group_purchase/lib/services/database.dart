@@ -102,47 +102,50 @@ class DatabaseService {
         .delete();
   }
 
-  //Funkcja tworząca kolekcję list użytkownika
-  Future addNewList(String? listName) async {
-    return await userCollection
-        .doc(uid)
+  //Funkcja tworząca kolekcję list produktów użytkownika
+  Future addNewList(String? listName, usersArray) async {
+    return await FirebaseFirestore.instance
         .collection('lists')
         .doc(listName)
-        .set({});
+        .set({
+      'listId': listName,
+      'users': usersArray,
+    });
   }
 
   //Funkcja pobierająca listy z bazy
   getLists(String? currentUserEmail) {
-    return userCollection.doc(currentUserEmail).collection('lists').get();
+    return FirebaseFirestore.instance
+        .collection('lists')
+        .where('users', arrayContains: currentUserEmail)
+        .get();
   }
 
   //Funkcja kasująca całą listę
   Future deleteList(String? currentUserEmail, String? index) async {
-    return await userCollection
-        .doc(currentUserEmail)
+    return await FirebaseFirestore.instance
         .collection('lists')
         .doc(index)
         .delete();
   }
 
   //Funkcja odpowiedzialna za dodawanie produktu do bazy danych
-  Future addProduct(
-      String? currentUserEmail, String? index, String product) async {
-    return await userCollection
-        .doc(currentUserEmail)
+  Future addProduct(String? currentUserEmail, String? index, String product,
+      String userName) async {
+    return await FirebaseFirestore.instance
         .collection('lists')
         .doc(index)
         .collection('products')
         .doc(product)
         .set({
       'name': product,
+      'addBy': userName,
     }, SetOptions(merge: true));
   }
 
   //Funkcja pobierająca produkty z listy
   getProducts(String? currentUserEmail, String? index) {
-    return userCollection
-        .doc(currentUserEmail)
+    return FirebaseFirestore.instance
         .collection('lists')
         .doc(index)
         .collection('products')
@@ -152,12 +155,31 @@ class DatabaseService {
   //Funkcja kasująca produkt z listy
   Future deleteProduct(
       String? currentUserEmail, String? index, String? name) async {
-    return await userCollection
-        .doc(currentUserEmail)
+    return await FirebaseFirestore.instance
         .collection('lists')
         .doc(index)
         .collection('products')
         .doc(name)
         .delete();
+  }
+
+  //Funkcja odpowiedzialna za dodanie znajomego do listy produktów
+  Future addFriendToList(String? index, usersArray) async {
+    return await FirebaseFirestore.instance
+        .collection('lists')
+        .doc(index)
+        .update({
+      'users': FieldValue.arrayUnion(usersArray),
+    });
+  }
+
+  //Funkcja odpowiedzialna za usunięcie znajomego z listy produktów
+  Future deleteFriendFromList(String? index, usersArray) async {
+    return await FirebaseFirestore.instance
+        .collection('lists')
+        .doc(index)
+        .update({
+      'users': FieldValue.arrayRemove(usersArray),
+    });
   }
 }
