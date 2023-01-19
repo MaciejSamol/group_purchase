@@ -52,6 +52,7 @@ class _FriendRequestScreenState extends State<FriendRequestScreen> {
         ? ListView.builder(
             itemCount: requestSnapshot.docs.length,
             shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
               return RequestTile(
                 friendName:
@@ -72,8 +73,8 @@ class _FriendRequestScreenState extends State<FriendRequestScreen> {
         backgroundColor: Colors.green,
       ), // Pasek górny
       body: Container(
-        child: Column(
-          children: [requestList()],
+        child: SingleChildScrollView(
+          child: requestList(),
         ),
       ),
     );

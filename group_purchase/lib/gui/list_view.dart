@@ -38,6 +38,7 @@ class _ListViewPageState extends State<ListViewPage> {
         ? ListView.builder(
             itemCount: productSnapshot.docs.length,
             shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
               return ProductTile(
                 name: productSnapshot.docs[index].data()['name']!,
@@ -64,12 +65,9 @@ class _ListViewPageState extends State<ListViewPage> {
         ],
       ),
       body: Container(
-        child: Column(
-          children: [
-            productsWidget()
+        child: SingleChildScrollView(child: productsWidget()
             // wywołanie
-          ],
-        ),
+            ),
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.green,
@@ -91,7 +89,6 @@ class _ListViewPageState extends State<ListViewPage> {
   }
 
   Widget _buildPopupDialog(BuildContext context) {
-    int productNr = 1;
     return AlertDialog(
       title: const Text('Dodawanie produktu'),
       content: Column(

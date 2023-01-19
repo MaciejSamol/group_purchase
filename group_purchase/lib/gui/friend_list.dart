@@ -35,6 +35,7 @@ class _FriendListPageState extends State<FriendListPage> {
         ? ListView.builder(
             itemCount: friendListSnapshot.docs.length,
             shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
               return FriendListTile(
                 friendName:
@@ -74,8 +75,8 @@ class _FriendListPageState extends State<FriendListPage> {
         ],
       ),
       body: Container(
-        child: Column(
-          children: [friendList()],
+        child: SingleChildScrollView(
+          child: friendList(),
         ),
       ),
     );
