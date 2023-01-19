@@ -14,17 +14,6 @@ class ListViewPage extends StatefulWidget {
   State<ListViewPage> createState() => _ListViewPageState();
 }
 
-class LowerCaseTextFormatter extends TextInputFormatter {
-  @override
-  TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue, TextEditingValue newValue) {
-    return TextEditingValue(
-      text: newValue.text.toLowerCase(),
-      selection: newValue.selection,
-    );
-  }
-}
-
 class _ListViewPageState extends State<ListViewPage> {
   DatabaseService databaseService = new DatabaseService();
   TextEditingController productTextEditingController =
@@ -78,7 +67,7 @@ class _ListViewPageState extends State<ListViewPage> {
         child: Column(
           children: [
             productsWidget()
-            // wuwołanie
+            // wywołanie
           ],
         ),
       ),
@@ -110,7 +99,6 @@ class _ListViewPageState extends State<ListViewPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TextField(
-            inputFormatters: [LowerCaseTextFormatter()],
             controller: productTextEditingController,
             decoration: InputDecoration(
               hintText: 'wprowadź nazwę produktu',
@@ -126,7 +114,10 @@ class _ListViewPageState extends State<ListViewPage> {
           ),
           onPressed: () {
             //Dodawanie produktu
-            addProduct(productTextEditingController.text);
+            addProduct(productTextEditingController.text.capitalize());
+            setState(() {
+              productTextEditingController = new TextEditingController();
+            });
             // Kasowannie zawartości productTextEditingController
             Navigator.of(context).pop();
           },
@@ -154,22 +145,43 @@ class _ListViewPageState extends State<ListViewPage> {
 class ProductTile extends StatefulWidget {
   final String name;
   final String index;
-  const ProductTile({super.key, required this.name, required this.index});
+  const ProductTile({
+    super.key,
+    required this.name,
+    required this.index,
+  });
 
   @override
   State<ProductTile> createState() => _ProductTileState();
 }
 
 class _ProductTileState extends State<ProductTile> {
+  bool? _isChecked = false;
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
       child: Row(children: [
+        Column(
+          children: [
+            Checkbox(
+              value: _isChecked,
+              activeColor: Colors.green,
+              onChanged: (value) {
+                setState(() {
+                  _isChecked = value;
+                });
+              },
+            ),
+          ],
+        ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(widget.name),
+            Text(
+              widget.name,
+              style: TextStyle(fontSize: 15),
+            ),
             //Wyświetlanie produktu w kafelku
           ],
         ),
@@ -192,5 +204,11 @@ class _ProductTileState extends State<ProductTile> {
   deleteProduct(String index, String name) {
     DatabaseService(uid: FirebaseAuth.instance.currentUser!.email)
         .deleteProduct(FirebaseAuth.instance.currentUser!.email, index, name);
+  }
+}
+
+extension MyExtension on String {
+  String capitalize() {
+    return "${this[0].toUpperCase()}${this.substring(1).toLowerCase()}";
   }
 }
