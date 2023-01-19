@@ -140,6 +140,7 @@ class DatabaseService {
         .set({
       'name': product,
       'addBy': userName,
+      'isChecked': false,
     }, SetOptions(merge: true));
   }
 
@@ -180,6 +181,19 @@ class DatabaseService {
         .doc(index)
         .update({
       'users': FieldValue.arrayRemove(usersArray),
+    });
+  }
+
+  //Funkcja nadpisująca wartość isChecked
+  Future isCheckedUpdate(
+      String? index, String product, bool? isCheckedValue) async {
+    return await FirebaseFirestore.instance
+        .collection('lists')
+        .doc(index)
+        .collection('products')
+        .doc(product)
+        .update({
+      'isChecked': isCheckedValue,
     });
   }
 }

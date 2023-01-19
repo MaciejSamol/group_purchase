@@ -6,6 +6,7 @@ import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:group_purchase/gui/add_friend_to_list.dart';
 import 'package:group_purchase/services/database.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ListViewPage extends StatefulWidget {
   final String index;
@@ -63,6 +64,7 @@ class _ListViewPageState extends State<ListViewPage> {
                 name: productSnapshot.docs[index].data()['name']!,
                 user: productSnapshot.docs[index].data()['addBy']!,
                 index: widget.index,
+                isChecked: productSnapshot.docs[index].data()['isChecked']!,
               );
             })
         : Container();
@@ -185,11 +187,13 @@ class ProductTile extends StatefulWidget {
   final String name;
   final String user;
   final String index;
+  final bool isChecked;
   const ProductTile({
     super.key,
     required this.name,
     required this.index,
     required this.user,
+    required this.isChecked,
   });
 
   @override
@@ -197,7 +201,6 @@ class ProductTile extends StatefulWidget {
 }
 
 class _ProductTileState extends State<ProductTile> {
-  bool? _isChecked = false;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -206,11 +209,11 @@ class _ProductTileState extends State<ProductTile> {
         Column(
           children: [
             Checkbox(
-              value: _isChecked,
+              value: widget.isChecked,
               activeColor: Colors.green,
               onChanged: (value) {
                 setState(() {
-                  _isChecked = value;
+                  isCheckedUpdate(widget.index, widget.name, value);
                 });
               },
             ),
@@ -244,6 +247,11 @@ class _ProductTileState extends State<ProductTile> {
         )
       ]),
     );
+  }
+
+  isCheckedUpdate(String index, String product, bool? value) {
+    DatabaseService(uid: FirebaseAuth.instance.currentUser!.email)
+        .isCheckedUpdate(index, product, value);
   }
 
   deleteProduct(String index, String name) {
