@@ -70,6 +70,7 @@ class _MainPageState extends State<MainPage> {
                   listName: listSnapshot.docs[index].data()['listId']!,
                   id: listSnapshot.docs[index].reference.id.toString(),
                   deviceId: widget.deviceId,
+                  count: listSnapshot.docs[index].data()['count']!.toString(),
                 );
               })
           : Container();
@@ -85,6 +86,8 @@ class _MainPageState extends State<MainPage> {
                   listName: anonListSnapshot.docs[index].data()['listId']!,
                   id: anonListSnapshot.docs[index].reference.id.toString(),
                   deviceId: widget.deviceId,
+                  count:
+                      anonListSnapshot.docs[index].data()['count']!.toString(),
                 );
               })
           : Container(); // W przyszłości listy dla użytkowników bez konta
@@ -210,6 +213,9 @@ class _MainPageState extends State<MainPage> {
           ),
           onPressed: () {
             Navigator.of(context).pop();
+            setState(() {
+              listNameTextEditingController = new TextEditingController();
+            });
           },
           child: const Text('Zamknij'),
         ),
@@ -263,6 +269,9 @@ class _MainPageState extends State<MainPage> {
           ),
           onPressed: () {
             Navigator.of(context).pop();
+            setState(() {
+              listNameTextEditingController = new TextEditingController();
+            });
           },
           child: const Text('Zamknij'),
         ),
@@ -293,11 +302,13 @@ class ListTile extends StatefulWidget {
   final String listName;
   final String id;
   final String deviceId;
+  final String count;
   const ListTile(
       {super.key,
       required this.listName,
       required this.id,
-      required this.deviceId});
+      required this.deviceId,
+      required this.count});
 
   @override
   State<ListTile> createState() => _ListTileState();
@@ -351,7 +362,7 @@ class _ListTileState extends State<ListTile> {
                   ),
                   // Zliczanie produktów
                   Text(
-                    "0/0",
+                    "0/" + widget.count,
                     style: TextStyle(fontSize: 20),
                   )
                 ],

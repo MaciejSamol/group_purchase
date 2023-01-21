@@ -105,6 +105,7 @@ class DatabaseService {
   //Funkcja tworząca kolekcję list produktów użytkownika
   Future addNewList(String? listName, usersArray) async {
     return await FirebaseFirestore.instance.collection('lists').doc().set({
+      'count': 0,
       'listId': listName,
       'users': usersArray,
     });
@@ -189,6 +190,15 @@ class DatabaseService {
         .doc(product)
         .update({
       'isChecked': isCheckedValue,
+    });
+  }
+
+  Future addToCount(String? index) async {
+    return await FirebaseFirestore.instance
+        .collection('lists')
+        .doc(index)
+        .update({
+      'count': FieldValue.increment(1),
     });
   }
 }

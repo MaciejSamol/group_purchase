@@ -188,9 +188,11 @@ class _ListViewPageState extends State<ListViewPage> {
             if (FirebaseAuth.instance.currentUser != null) {
               addProduct(
                   productTextEditingController.text.capitalize(), userName);
+              addToCount();
             } else {
               addAnonProduct(
                   productTextEditingController.text.capitalize(), userName);
+              addToAnonCount();
             }
             setState(() {
               productTextEditingController = new TextEditingController();
@@ -206,11 +208,23 @@ class _ListViewPageState extends State<ListViewPage> {
           ),
           onPressed: () {
             Navigator.of(context).pop();
+            setState(() {
+              productTextEditingController = new TextEditingController();
+            });
           },
           child: const Text('Zamknij'),
         ),
       ],
     );
+  }
+
+  addToCount() {
+    DatabaseService(uid: FirebaseAuth.instance.currentUser!.email)
+        .addToCount(widget.index);
+  }
+
+  addToAnonCount() {
+    DatabaseService(uid: widget.devicId).addToCount(widget.index);
   }
 
   addProduct(String product, String userName) {
@@ -271,10 +285,6 @@ class _ProductTileState extends State<ProductTile> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: checkForUser()
             //Wyświetlanie produktu w kafelku
-            ),
-        Spacer(),
-        Column(
-            //Tutaj ilość produktów lub checkbox czy kupione
             ),
         Spacer(),
         IconButton(
