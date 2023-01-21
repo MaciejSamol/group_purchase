@@ -35,18 +35,26 @@ class _SettingsState extends State<Settings> {
             },
             child: Container(
               child: Card(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    const ListTile(
-                      leading: Icon(Icons.logout),
-                      title: Text('Wyloguj'),
-                    ),
-                  ],
-                ),
+                child: checkForUser(),
               ),
             ),
           ),
         ));
+  }
+
+  checkForUser() {
+    if (FirebaseAuth.instance.currentUser != null) {
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          const ListTile(
+            leading: Icon(Icons.logout),
+            title: Text('Wyloguj'),
+          ),
+        ],
+      );
+    } else {
+      return Column();
+    }
   }
 }

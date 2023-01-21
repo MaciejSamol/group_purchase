@@ -104,10 +104,7 @@ class DatabaseService {
 
   //Funkcja tworząca kolekcję list produktów użytkownika
   Future addNewList(String? listName, usersArray) async {
-    return await FirebaseFirestore.instance
-        .collection('lists')
-        .doc(listName)
-        .set({
+    return await FirebaseFirestore.instance.collection('lists').doc().set({
       'listId': listName,
       'users': usersArray,
     });
@@ -122,7 +119,7 @@ class DatabaseService {
   }
 
   //Funkcja kasująca całą listę
-  Future deleteList(String? currentUserEmail, String? index) async {
+  Future deleteList(String? index) async {
     return await FirebaseFirestore.instance
         .collection('lists')
         .doc(index)
@@ -130,8 +127,7 @@ class DatabaseService {
   }
 
   //Funkcja odpowiedzialna za dodawanie produktu do bazy danych
-  Future addProduct(String? currentUserEmail, String? index, String product,
-      String userName) async {
+  Future addProduct(String? index, String product, String userName) async {
     return await FirebaseFirestore.instance
         .collection('lists')
         .doc(index)
@@ -145,7 +141,7 @@ class DatabaseService {
   }
 
   //Funkcja pobierająca produkty z listy
-  getProducts(String? currentUserEmail, String? index) {
+  getProducts(String? index) {
     return FirebaseFirestore.instance
         .collection('lists')
         .doc(index)
@@ -154,8 +150,7 @@ class DatabaseService {
   }
 
   //Funkcja kasująca produkt z listy
-  Future deleteProduct(
-      String? currentUserEmail, String? index, String? name) async {
+  Future deleteProduct(String? index, String? name) async {
     return await FirebaseFirestore.instance
         .collection('lists')
         .doc(index)

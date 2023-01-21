@@ -6,7 +6,8 @@ import 'home_page.dart';
 import 'friend_list.dart';
 
 class LogoutPage extends StatefulWidget {
-  LogoutPage({super.key});
+  final String devId;
+  LogoutPage({super.key, required this.devId});
 
   @override
   State<LogoutPage> createState() => _LogoutPageState();
@@ -91,7 +92,11 @@ class _LogoutPageState extends State<LogoutPage> {
                 onPressed: () {
                   _updateUserName();
                   Navigator.pushReplacement(
-                      context, MaterialPageRoute(builder: (_) => MainPage()));
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => MainPage(
+                                deviceId: widget.devId,
+                              )));
                 },
                 style: ElevatedButton.styleFrom(
                   // ignore: deprecated_member_use
@@ -110,13 +115,14 @@ class _LogoutPageState extends State<LogoutPage> {
         title: Text("Profil"),
         backgroundColor: Colors.green,
         actions: <Widget>[
-          IconButton(icon: Icon(Icons.people), onPressed: () {
-             Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => FriendListPage()),
-                  );
-          }),
+          IconButton(
+              icon: Icon(Icons.people),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => FriendListPage()),
+                );
+              }),
         ],
       ), // Pasek górny
       body: Column(

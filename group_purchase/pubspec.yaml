@@ -41,6 +41,7 @@ dependencies:
   cloud_firestore: ^4.3.0
   stateless: ^0.1.1
   shared_preferences: ^2.0.16
+  device_info_plus: ^3.2.3
 
 dev_dependencies:
   flutter_test:
