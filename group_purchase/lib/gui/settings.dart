@@ -48,7 +48,10 @@ class _SettingsState extends State<Settings> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           const ListTile(
-            leading: Icon(Icons.logout),
+            leading: Icon(
+              Icons.logout,
+              color: Colors.red,
+            ),
             title: Text('Wyloguj'),
           ),
         ],

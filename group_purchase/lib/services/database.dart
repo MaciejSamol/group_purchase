@@ -106,6 +106,7 @@ class DatabaseService {
   Future addNewList(String? listName, usersArray) async {
     return await FirebaseFirestore.instance.collection('lists').doc().set({
       'count': 0,
+      'bought': 0,
       'listId': listName,
       'users': usersArray,
     });
@@ -199,6 +200,33 @@ class DatabaseService {
         .doc(index)
         .update({
       'count': FieldValue.increment(1),
+    });
+  }
+
+  Future deleteFromCount(String index) async {
+    return await FirebaseFirestore.instance
+        .collection('lists')
+        .doc(index)
+        .update({
+      'count': FieldValue.increment(-1),
+    });
+  }
+
+  Future addToBought(String index) async {
+    return await FirebaseFirestore.instance
+        .collection('lists')
+        .doc(index)
+        .update({
+      'bought': FieldValue.increment(1),
+    });
+  }
+
+  Future deleteFromBought(String index) async {
+    return await FirebaseFirestore.instance
+        .collection('lists')
+        .doc(index)
+        .update({
+      'bought': FieldValue.increment(-1),
     });
   }
 }

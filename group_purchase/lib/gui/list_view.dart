@@ -138,6 +138,11 @@ class _ListViewPageState extends State<ListViewPage> {
                           )));
             }),
         IconButton(
+            icon: Icon(Icons.people),
+            onPressed: () {
+              //Funkcja odpowiedzialna za wyświetlanie listy członków listy zakupowej
+            }),
+        IconButton(
             icon: Icon(Icons.delete),
             onPressed: () {
               //Funkcja odpowiedzialna za kasowanie całej listy
@@ -272,9 +277,19 @@ class _ProductTileState extends State<ProductTile> {
                 setState(() {
                   if (FirebaseAuth.instance.currentUser != null) {
                     isCheckedUpdate(widget.index, widget.name, value);
+                    if (value == true) {
+                      addToBought(widget.index);
+                    } else {
+                      deleteFromBought(widget.index);
+                    }
                   } else {
                     isCheckedUpdateAnon(
                         widget.devId, widget.index, widget.name, value);
+                    if (value == true) {
+                      addToBoughtAnon(widget.devId, widget.index);
+                    } else {
+                      deleteFromBoughtAnon(widget.devId, widget.index);
+                    }
                   }
                 });
               },
@@ -293,13 +308,48 @@ class _ProductTileState extends State<ProductTile> {
           onPressed: () {
             if (FirebaseAuth.instance.currentUser != null) {
               deleteProduct(widget.index, widget.name);
+              deleteFromCount(widget.index);
+              if (widget.isChecked == true) {
+                deleteFromBought(widget.index);
+              }
             } else {
               deleteProductAnon(widget.devId, widget.index, widget.name);
+              deleteFromCountAnon(widget.devId, widget.index);
+              if (widget.isChecked == true) {
+                deleteFromBoughtAnon(widget.devId, widget.index);
+              }
             }
           },
         )
       ]),
     );
+  }
+
+  deleteFromCount(String index) {
+    DatabaseService(uid: FirebaseAuth.instance.currentUser!.email)
+        .deleteFromCount(index);
+  }
+
+  deleteFromCountAnon(String deviceId, String index) {
+    DatabaseService(uid: deviceId).deleteFromCount(index);
+  }
+
+  addToBought(String index) {
+    DatabaseService(uid: FirebaseAuth.instance.currentUser!.email)
+        .addToBought(index);
+  }
+
+  addToBoughtAnon(String deviceId, String index) {
+    DatabaseService(uid: deviceId).addToBought(index);
+  }
+
+  deleteFromBought(String index) {
+    DatabaseService(uid: FirebaseAuth.instance.currentUser!.email)
+        .deleteFromBought(index);
+  }
+
+  deleteFromBoughtAnon(String deviceId, String index) {
+    DatabaseService(uid: deviceId).deleteFromBought(index);
   }
 
   checkForUser() {

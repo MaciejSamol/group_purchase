@@ -22,6 +22,11 @@ Future<void> main() async {
           )));
 }
 
+Future initializattion(BuildContext? context) async {
+  await Future.delayed(Duration(seconds: 5));
+}
+// funkcja zatrzymująca splash screen na 5 sekund
+
 class MyApp extends StatelessWidget {
   final String devId;
   const MyApp({required this.devId});

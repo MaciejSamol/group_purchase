@@ -175,8 +175,11 @@ class _SearchTileState extends State<SearchTile> {
           ],
         ),
         Spacer(),
-        GestureDetector(
-          onTap: () {
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.green,
+          ),
+          onPressed: () {
             _checkIfExists();
             if (existance == false) {
               sendRequest(widget
@@ -193,15 +196,8 @@ class _SearchTileState extends State<SearchTile> {
               );
             }
           },
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.green,
-              borderRadius: BorderRadius.circular(30),
-            ),
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            child: Text("Dodaj"),
-          ),
-        )
+          child: const Text('Dodaj'),
+        ),
       ]),
     );
   }
@@ -221,6 +217,9 @@ class _SearchTileState extends State<SearchTile> {
       ),
       actions: <Widget>[
         ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.red,
+          ),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -239,6 +238,9 @@ class _SearchTileState extends State<SearchTile> {
       ),
       actions: <Widget>[
         ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.red,
+          ),
           onPressed: () {
             Navigator.of(context).pop();
           },

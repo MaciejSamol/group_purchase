@@ -110,25 +110,19 @@ class _FriendListTileState extends State<FriendListTile> {
           ],
         ),
         Spacer(),
-        GestureDetector(
-          onTap: () {
+        ElevatedButton(
+          style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(Colors.red)),
+          onPressed: () {
             deleteFriend(widget
                 .friendEmail); //Funkcja odpowiedzialna za kasowanie znajomych
             setState(() {});
             showDialog(
-              context: context,
-              builder: (BuildContext context) =>
-                  _buildPopupDialogDeleted(context),
-            );
+                context: context,
+                builder: (BuildContext context) =>
+                    _buildPopupDialogDeleted(context));
           },
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.red,
-              borderRadius: BorderRadius.circular(30),
-            ),
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            child: Text("Usuń"),
-          ),
+          child: Text("Usuń"),
         ),
       ]),
     );
