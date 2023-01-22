@@ -63,48 +63,88 @@ class _LoginPageState extends State<LoginPage> {
         backgroundColor: Colors.green,
         title: Text(login ? 'Zaloguj się' : 'Zarejestruj się'),
       ), // Pasek górny
-      body: Column(
-        children: [
-          TextFormField(
-            controller: _controllerEmail,
-            decoration: InputDecoration(labelText: "Email"),
-          ), // Pole wprowadzania emaila
-          TextFormField(
-            controller: _controllerPassword,
-            decoration: InputDecoration(labelText: "Hasło"),
-          ), // Pole wprowadzania hasła
-          Text(error),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              ElevatedButton(
-                onPressed: () {
-                  login ? loginUser() : createUser();
-                  if (login == true) {
-                    Navigator.pop(context);
-                  } else if (login == false) {
-                    setState(() {
-                      login = !login;
-                    });
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
+      body: Padding(
+        padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+        child: Column(
+          children: [
+            TextFormField(
+              controller: _controllerEmail,
+              cursorColor: Colors.green,
+              decoration: InputDecoration(
+                labelText: "Email",
+                labelStyle: TextStyle(color: Colors.grey[700]),
+                focusedBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.green,
+                  ),
                 ),
-                child: Text(login ? "Zaloguj się" : "Załóż konto"),
+                enabledBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.green,
+                  ),
+                ),
               ),
-            ],
-          ),
-          OutlinedButton(
-            onPressed: () {
-              setState(() {
-                login = !login;
-              });
-            },
-            child: Text(login ? "Stwórz konto" : " Zaloguj się"),
-          )
-        ],
+            ),
+            const SizedBox(
+              height: 10,
+            ), // Pole wprowadzania emaila
+            TextFormField(
+              controller: _controllerPassword,
+              cursorColor: Colors.green,
+              decoration: InputDecoration(
+                labelText: "Hasło",
+                labelStyle: TextStyle(color: Colors.grey[700]),
+                focusedBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.green,
+                  ),
+                ),
+                enabledBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.green,
+                  ),
+                ),
+              ),
+            ), // Pole wprowadzania hasła
+            Text(error),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    login ? loginUser() : createUser();
+                    if (login == true) {
+                      Navigator.pop(context);
+                    } else if (login == false) {
+                      setState(() {
+                        login = !login;
+                      });
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                  ),
+                  child: Text(login ? "Zaloguj się" : "Załóż konto"),
+                ),
+              ],
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+              ),
+              onPressed: () {
+                setState(() {
+                  login = !login;
+                });
+              },
+              child: Text(
+                login ? "Stwórz konto" : " Zaloguj się",
+                style: TextStyle(color: Colors.green),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

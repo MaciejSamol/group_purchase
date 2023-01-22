@@ -229,4 +229,9 @@ class DatabaseService {
       'bought': FieldValue.increment(-1),
     });
   }
+
+  // FUnkcja pobierająca pola z konkretnej listy
+  getUsersList(String index) {
+    return FirebaseFirestore.instance.collection('lists').doc(index).get();
+  }
 }
