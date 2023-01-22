@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 import 'package:group_purchase/gui/list_view.dart';
 import 'package:group_purchase/gui/settings.dart';
 import 'package:group_purchase/services/database.dart';
@@ -8,7 +9,8 @@ import 'login.dart';
 import 'logout.dart';
 
 class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+  final String deviceId;
+  const MainPage({super.key, required this.deviceId});
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -44,6 +46,17 @@ class _MainPageState extends State<MainPage> {
     });
   }
 
+  dynamic anonListSnapshot;
+
+  Future initiateAnonListLoad() async {
+    await databaseService.getLists(widget.deviceId).then((val) {
+      if (!mounted) return;
+      setState(() {
+        anonListSnapshot = val;
+      });
+    });
+  }
+
   Widget listWidget() {
     if (user != null) {
       initiateListLoad();
@@ -54,12 +67,33 @@ class _MainPageState extends State<MainPage> {
               physics: const NeverScrollableScrollPhysics(),
               itemBuilder: (context, index) {
                 return ListTile(
-                  id: listSnapshot.docs[index].data()['listId']!,
+                  listName: listSnapshot.docs[index].data()['listId']!,
+                  id: listSnapshot.docs[index].reference.id.toString(),
+                  deviceId: widget.deviceId,
+                  count: listSnapshot.docs[index].data()['count']!.toString(),
+                  bought: listSnapshot.docs[index].data()['bought']!.toString(),
                 );
               })
           : Container();
     } else {
-      return Container(); // W przyszłości listy dla użytkowników bez konta
+      initiateAnonListLoad();
+      return anonListSnapshot != null
+          ? ListView.builder(
+              itemCount: anonListSnapshot.docs.length,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemBuilder: (context, index) {
+                return ListTile(
+                  listName: anonListSnapshot.docs[index].data()['listId']!,
+                  id: anonListSnapshot.docs[index].reference.id.toString(),
+                  deviceId: widget.deviceId,
+                  count:
+                      anonListSnapshot.docs[index].data()['count']!.toString(),
+                  bought:
+                      anonListSnapshot.docs[index].data()['bought']!.toString(),
+                );
+              })
+          : Container(); // W przyszłości listy dla użytkowników bez konta
     }
   }
 
@@ -81,7 +115,10 @@ class _MainPageState extends State<MainPage> {
               } else {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => LogoutPage()),
+                  MaterialPageRoute(
+                      builder: (context) => LogoutPage(
+                            devId: widget.deviceId,
+                          )),
                 );
               }
             }),
@@ -107,11 +144,19 @@ class _MainPageState extends State<MainPage> {
         backgroundColor: Colors.green,
         child: const Icon(Icons.add),
         onPressed: () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) =>
-                _buildPopupDialogNewList(context),
-          );
+          if (user != null) {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) =>
+                  _buildPopupDialogNewList(context),
+            );
+          } else {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) =>
+                  _buildPopupDialogNewAnonList(context),
+            ); // FUnkcja dodająca listy dla użytkownika bez konta
+          }
         },
       ),
     );
@@ -120,6 +165,10 @@ class _MainPageState extends State<MainPage> {
   addList(String? listName) {
     DatabaseService(uid: FirebaseAuth.instance.currentUser!.email)
         .addNewList(listName, [FirebaseAuth.instance.currentUser!.email]);
+  }
+
+  addAnonList(String? listName, String? index) {
+    DatabaseService(uid: index).addNewList(listName, [index]);
   }
 
   Widget _buildPopupDialogNewList(BuildContext context) {
@@ -167,6 +216,65 @@ class _MainPageState extends State<MainPage> {
           ),
           onPressed: () {
             Navigator.of(context).pop();
+            setState(() {
+              listNameTextEditingController = new TextEditingController();
+            });
+          },
+          child: const Text('Zamknij'),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPopupDialogNewAnonList(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Dodawanie listy'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextField(
+            controller: listNameTextEditingController,
+            decoration: InputDecoration(
+              hintText: 'wprowadź nazwę listy',
+              border: InputBorder.none,
+            ),
+          ),
+        ],
+      ),
+      actions: <Widget>[
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.green,
+          ),
+          onPressed: () {
+            //Dodawanie produktu
+            if (listNameTextEditingController.text != '') {
+              addAnonList(listNameTextEditingController.text.capitalize(),
+                  widget.deviceId);
+              setState(() {
+                listNameTextEditingController = new TextEditingController();
+              });
+              // Kasowannie zawartości listNameTextEditingController
+              Navigator.of(context).pop();
+            } else {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) => _buildPopupDialog(context),
+              );
+            }
+          },
+          child: const Text('Dodaj'),
+        ),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.red,
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+            setState(() {
+              listNameTextEditingController = new TextEditingController();
+            });
           },
           child: const Text('Zamknij'),
         ),
@@ -194,8 +302,18 @@ class _MainPageState extends State<MainPage> {
 }
 
 class ListTile extends StatefulWidget {
+  final String listName;
   final String id;
-  const ListTile({super.key, required this.id});
+  final String deviceId;
+  final String count;
+  final String bought;
+  const ListTile(
+      {super.key,
+      required this.listName,
+      required this.id,
+      required this.deviceId,
+      required this.count,
+      required this.bought});
 
   @override
   State<ListTile> createState() => _ListTileState();
@@ -210,7 +328,9 @@ class _ListTileState extends State<ListTile> {
           context,
           MaterialPageRoute(
               builder: (context) => ListViewPage(
+                    listName: widget.listName,
                     index: widget.id,
+                    devicId: widget.deviceId,
                   )),
         );
       },
@@ -239,7 +359,7 @@ class _ListTileState extends State<ListTile> {
               child: Row(
                 children: [
                   Text(
-                    widget.id,
+                    widget.listName,
                     style: TextStyle(fontSize: 20),
                   ),
                   Spacer(
@@ -247,7 +367,7 @@ class _ListTileState extends State<ListTile> {
                   ),
                   // Zliczanie produktów
                   Text(
-                    "0/0",
+                    widget.bought + "/" + widget.count,
                     style: TextStyle(fontSize: 20),
                   )
                 ],

@@ -109,8 +109,11 @@ class _RequestTileState extends State<RequestTile> {
           ],
         ),
         Spacer(),
-        GestureDetector(
-          onTap: () {
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.green,
+          ),
+          onPressed: () {
             acceptRequest(
                 widget.friendEmail,
                 widget.friendName,
@@ -123,19 +126,19 @@ class _RequestTileState extends State<RequestTile> {
               builder: (BuildContext context) =>
                   _buildPopupDialogAccepted(context),
             );
+
+            Navigator.of(context).pop();
           },
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.green,
-              borderRadius: BorderRadius.circular(30),
-            ),
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            child: Text("Akceptuj"),
-          ),
+          child: const Text('Akceptuj'),
         ),
-        Spacer(),
-        GestureDetector(
-          onTap: () {
+        SizedBox(
+          width: 10,
+        ),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.red,
+          ),
+          onPressed: () {
             deleteRequest(widget
                 .friendEmail); // funkcja odpowiedzialna za odrzucenie friend requesta
             setState(() {});
@@ -144,16 +147,11 @@ class _RequestTileState extends State<RequestTile> {
               builder: (BuildContext context) =>
                   _buildPopupDialogDeleted(context),
             );
+
+            Navigator.of(context).pop();
           },
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.red,
-              borderRadius: BorderRadius.circular(30),
-            ),
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            child: Text("Odrzuć"),
-          ),
-        )
+          child: const Text('Odrzuć'),
+        ),
       ]),
     );
   }

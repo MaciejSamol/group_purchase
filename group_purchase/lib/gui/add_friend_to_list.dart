@@ -53,7 +53,7 @@ class _AddFriendToListPageState extends State<AddFriendToListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Lista znajomych"),
+        title: Text("Udostępnij listę znajomym"),
         backgroundColor: Colors.green,
       ),
       body: Container(
@@ -94,9 +94,10 @@ class _AddFriendToListTileState extends State<AddFriendToListTile> {
           ],
         ),
         Spacer(),
-        GestureDetector(
-          onTap: () {
-            //Funkcja odpowiedzialna za kdodawanie znajomego do listy
+        ElevatedButton(
+          style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(Colors.green)),
+          onPressed: () {
             addFriendToList();
             setState(() {});
             showDialog(
@@ -105,18 +106,18 @@ class _AddFriendToListTileState extends State<AddFriendToListTile> {
             );
           },
           child: Container(
-            decoration: BoxDecoration(
-              color: Colors.green,
-              borderRadius: BorderRadius.circular(30),
+            child: Text(
+              "Dodaj",
             ),
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            child: Text("Dodaj do listy"),
           ),
+        ), // przycisk dodający znajomego do listy zakupowej
+        SizedBox(
+          width: 10,
         ),
-        Spacer(),
-        GestureDetector(
-          onTap: () {
-            //Funkcja odpowiedzialna za kasowanie znajomego z listy
+        ElevatedButton(
+          style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(Colors.red)),
+          onPressed: () {
             removeFriendFromList();
             setState(() {});
             showDialog(
@@ -125,15 +126,10 @@ class _AddFriendToListTileState extends State<AddFriendToListTile> {
                   _buildPopupDialogDeleted(context),
             );
           },
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.red,
-              borderRadius: BorderRadius.circular(30),
-            ),
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            child: Text("Usuń z listy"),
+          child: Text(
+            "Usuń",
           ),
-        ),
+        ) // przycisk usuwający  znajomego z  listy zakupowej
       ]),
     );
   }
@@ -157,6 +153,9 @@ class _AddFriendToListTileState extends State<AddFriendToListTile> {
       ),
       actions: <Widget>[
         ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.red,
+          ),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -175,6 +174,9 @@ class _AddFriendToListTileState extends State<AddFriendToListTile> {
       ),
       actions: <Widget>[
         ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.red,
+          ),
           onPressed: () {
             Navigator.of(context).pop();
           },
