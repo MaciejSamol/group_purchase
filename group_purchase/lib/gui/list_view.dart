@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:group_purchase/gui/add_friend_to_list.dart';
+import 'package:group_purchase/gui/firends_added_to_list.dart';
 import 'package:group_purchase/services/database.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -141,6 +142,10 @@ class _ListViewPageState extends State<ListViewPage> {
             icon: Icon(Icons.people),
             onPressed: () {
               //Funkcja odpowiedzialna za wyświetlanie listy członków listy zakupowej
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => FriendsAddedToListPage(id: widget.index)));
             }),
         IconButton(
             icon: Icon(Icons.delete),

@@ -30,21 +30,47 @@ class _AddFriendToListPageState extends State<AddFriendToListPage> {
     });
   }
 
+  dynamic friendsAddedListSnapshot;
+
+  Future initiateFriendsAddedListLoad() async {
+    await databaseService.getUsersList(widget.index).then((val) {
+      if (!mounted) return;
+      setState(() {
+        friendsAddedListSnapshot = val;
+      });
+    });
+  }
+
+  checkForUser(index) {
+    for (String user in friendsAddedListSnapshot.data()['users']) {
+      if (user == addFriendToListSnapshot.docs[index].reference.id.toString()) {
+        return true;
+      } else {
+        continue;
+      }
+    }
+  }
+
   Widget addFriendToList() {
     initiateAddFriendToListLoad();
+    initiateFriendsAddedListLoad();
     return addFriendToListSnapshot != null
         ? ListView.builder(
             itemCount: addFriendToListSnapshot.docs.length,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
-              return AddFriendToListTile(
-                friendName:
-                    addFriendToListSnapshot.docs[index].data()['friendName']!,
-                friendEmail:
-                    addFriendToListSnapshot.docs[index].data()['friendEmail']!,
-                index: widget.index,
-              );
+              if (checkForUser(index) != true) {
+                return AddFriendToListTile(
+                  friendName:
+                      addFriendToListSnapshot.docs[index].data()['friendName']!,
+                  friendEmail: addFriendToListSnapshot.docs[index]
+                      .data()['friendEmail']!,
+                  index: widget.index,
+                );
+              } else {
+                return Container();
+              }
             })
         : Container();
   }
@@ -110,26 +136,7 @@ class _AddFriendToListTileState extends State<AddFriendToListTile> {
               "Dodaj",
             ),
           ),
-        ), // przycisk dodający znajomego do listy zakupowej
-        SizedBox(
-          width: 10,
-        ),
-        ElevatedButton(
-          style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(Colors.red)),
-          onPressed: () {
-            removeFriendFromList();
-            setState(() {});
-            showDialog(
-              context: context,
-              builder: (BuildContext context) =>
-                  _buildPopupDialogDeleted(context),
-            );
-          },
-          child: Text(
-            "Usuń",
-          ),
-        ) // przycisk usuwający  znajomego z  listy zakupowej
+        ), // przycisk dodający znajomego do listy zakupowej // przycisk usuwający  znajomego z  listy zakupowej
       ]),
     );
   }
@@ -139,35 +146,9 @@ class _AddFriendToListTileState extends State<AddFriendToListTile> {
         .addFriendToList(widget.index, [widget.friendEmail]);
   }
 
-  removeFriendFromList() {
-    DatabaseService(uid: FirebaseAuth.instance.currentUser!.email)
-        .deleteFriendFromList(widget.index, [widget.friendEmail]);
-  }
-
   Widget _buildPopupDialogAdd(BuildContext context) {
     return new AlertDialog(
       title: const Text('Dodano znajomego do listy zakupowej'),
-      content: new Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-      ),
-      actions: <Widget>[
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.red,
-          ),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: const Text('Zamknij'),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPopupDialogDeleted(BuildContext context) {
-    return new AlertDialog(
-      title: const Text('Usunięto znajomego z listy zakupowej'),
       content: new Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
