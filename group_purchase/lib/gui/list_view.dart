@@ -145,7 +145,8 @@ class _ListViewPageState extends State<ListViewPage> {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => FriendsAddedToListPage(id: widget.index)));
+                      builder: (context) =>
+                          FriendsAddedToListPage(id: widget.index)));
             }),
         IconButton(
             icon: Icon(Icons.delete),

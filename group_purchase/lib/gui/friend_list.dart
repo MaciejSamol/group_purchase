@@ -105,7 +105,12 @@ class _FriendListTileState extends State<FriendListTile> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(widget.friendName),
+            Text(
+              widget.friendName,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             Text(widget.friendEmail),
           ],
         ),

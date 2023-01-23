@@ -170,7 +170,12 @@ class _SearchTileState extends State<SearchTile> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(widget.friendName),
+            Text(
+              widget.friendName,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             Text(widget.friendEmail),
           ],
         ),
