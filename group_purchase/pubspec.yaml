@@ -37,6 +37,17 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   stateless: ^0.1.1
+<<<<<<< Updated upstream
+=======
+  shared_preferences: ^2.0.16
+  device_info_plus: ^3.2.3
+  flutter_native_splash: ^2.2.17
+  connectivity_plus: ^3.0.2
+
+flutter_native_splash:
+  color: '#4caf50'
+  image: assets/images/logo2.png
+>>>>>>> Stashed changes
 
 dev_dependencies:
   flutter_test:
