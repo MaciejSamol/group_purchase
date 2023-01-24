@@ -1,9 +1,12 @@
+import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:group_purchase/gui/list_view.dart';
 import 'package:group_purchase/gui/settings.dart';
 import 'package:group_purchase/services/database.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 import 'login.dart';
 import 'logout.dart';
@@ -17,6 +20,8 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  Map _source = {ConnectivityResult.none: false};
+  final MyConnectivity _connectivity = MyConnectivity.instance;
   DatabaseService databaseService = new DatabaseService();
   TextEditingController listNameTextEditingController =
       new TextEditingController();
@@ -24,6 +29,10 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     super.initState();
+    _connectivity.initialise();
+    _connectivity.myStream.listen((source) {
+      setState(() => _source = source);
+    });
     onRefresh(FirebaseAuth.instance.currentUser);
   }
 
@@ -99,67 +108,91 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.green,
-        leading: IconButton(
-            icon: Icon(Icons.person),
-            onPressed: () {
-              if (user == null) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => LoginPage(
-                          onSignIn: (userCred) => onRefresh(userCred))),
-                );
-              } else {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => LogoutPage(
-                            devId: widget.deviceId,
-                          )),
-                );
-              }
-            }),
-        title: const Text('Moje listy'),
-        actions: <Widget>[
-          IconButton(
-              icon: Icon(Icons.settings),
+    String string;
+    switch (_source.keys.toList()[0]) {
+      case ConnectivityResult.mobile:
+        string = 'Online';
+        break;
+      case ConnectivityResult.wifi:
+        string = 'Online';
+        break;
+      case ConnectivityResult.none:
+      default:
+        string = 'Offline';
+    }
+    return string != 'Offline'
+        ? Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.green,
+              leading: IconButton(
+                  icon: Icon(Icons.person),
+                  onPressed: () {
+                    if (user == null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => LoginPage(
+                                onSignIn: (userCred) => onRefresh(userCred))),
+                      );
+                    } else {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => LogoutPage(
+                                  devId: widget.deviceId,
+                                )),
+                      );
+                    }
+                  }),
+              title: const Text('Moje listy'),
+              actions: <Widget>[
+                IconButton(
+                    icon: Icon(Icons.settings),
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Settings(
+                                  onSignOut: (userCred) =>
+                                      onRefresh(userCred))));
+                    }),
+              ],
+            ),
+            body: SingleChildScrollView(
+              child: listWidget(),
+            ),
+            floatingActionButton: FloatingActionButton(
+              backgroundColor: Colors.green,
+              child: const Icon(Icons.add),
               onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => Settings(
-                            onSignOut: (userCred) => onRefresh(userCred))));
-              }),
-        ],
-      ),
-      body: Card(
-        child: SingleChildScrollView(
-          child: listWidget(),
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.green,
-        child: const Icon(Icons.add),
-        onPressed: () {
-          if (user != null) {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) =>
-                  _buildPopupDialogNewList(context),
-            );
-          } else {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) =>
-                  _buildPopupDialogNewAnonList(context),
-            ); // FUnkcja dodająca listy dla użytkownika bez konta
-          }
-        },
-      ),
-    );
+                if (user != null) {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) =>
+                        _buildPopupDialogNewList(context),
+                  );
+                } else {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) =>
+                        _buildPopupDialogNewAnonList(context),
+                  ); // FUnkcja dodająca listy dla użytkownika bez konta
+                }
+              },
+            ),
+          )
+        : Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.green,
+              title: const Text('Brak połączenia z internetem'),
+            ),
+            body: Center(
+              child: Text(
+                'Offline',
+                style: TextStyle(fontSize: 54),
+              ),
+            ),
+          );
   }
 
   addList(String? listName) {
@@ -299,6 +332,12 @@ class _MainPageState extends State<MainPage> {
       ],
     );
   }
+
+  @override
+  void dispose() {
+    _connectivity.disposeStream();
+    super.dispose();
+  }
 }
 
 class ListTile extends StatefulWidget {
@@ -378,4 +417,35 @@ class _ListTileState extends State<ListTile> {
       ),
     );
   }
+}
+
+class MyConnectivity {
+  MyConnectivity._();
+
+  static final _instance = MyConnectivity._();
+  static MyConnectivity get instance => _instance;
+  final _connectivity = Connectivity();
+  final _controller = StreamController.broadcast();
+  Stream get myStream => _controller.stream;
+
+  void initialise() async {
+    ConnectivityResult result = await _connectivity.checkConnectivity();
+    _checkStatus(result);
+    _connectivity.onConnectivityChanged.listen((result) {
+      _checkStatus(result);
+    });
+  }
+
+  void _checkStatus(ConnectivityResult result) async {
+    bool isOnline = false;
+    try {
+      final result = await InternetAddress.lookup('example.com');
+      isOnline = result.isNotEmpty && result[0].rawAddress.isNotEmpty;
+    } on SocketException catch (_) {
+      isOnline = false;
+    }
+    _controller.sink.add({result: isOnline});
+  }
+
+  void disposeStream() => _controller.close();
 }
