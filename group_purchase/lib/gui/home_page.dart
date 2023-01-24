@@ -135,7 +135,7 @@ class _MainPageState extends State<MainPage> {
               }),
         ],
       ),
-      body: Container(
+      body: Card(
         child: SingleChildScrollView(
           child: listWidget(),
         ),

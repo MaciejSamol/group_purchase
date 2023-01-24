@@ -103,7 +103,12 @@ class _FriendListTileState extends State<FriendsAddedListTile> {
   createWidget() {
     _getDataFromDatabase();
     return [
-      Text(friendName),
+      Text(
+        friendName,
+        style: const TextStyle(
+          fontWeight: FontWeight.bold,
+        ),
+      ),
       Text(widget.friendEmail),
     ];
   }
