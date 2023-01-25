@@ -64,6 +64,8 @@ class _AddFriendToListPageState extends State<AddFriendToListPage> {
                 return AddFriendToListTile(
                   friendName:
                       addFriendToListSnapshot.docs[index].data()['friendName']!,
+                  friendSurname: addFriendToListSnapshot.docs[index]
+                      .data()['friendSurname']!,
                   friendEmail: addFriendToListSnapshot.docs[index]
                       .data()['friendEmail']!,
                   index: widget.index,
@@ -78,6 +80,7 @@ class _AddFriendToListPageState extends State<AddFriendToListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromARGB(255, 231, 229, 229),
       appBar: AppBar(
         title: Text("Udostępnij listę znajomym"),
         backgroundColor: Colors.green,
@@ -94,12 +97,14 @@ class _AddFriendToListPageState extends State<AddFriendToListPage> {
 class AddFriendToListTile extends StatefulWidget {
   final String friendName;
   final String friendEmail;
+  final String friendSurname;
   final String index;
   const AddFriendToListTile({
     super.key,
     required this.friendName,
     required this.friendEmail,
     required this.index,
+    required this.friendSurname,
   });
 
   @override
@@ -109,40 +114,50 @@ class AddFriendToListTile extends StatefulWidget {
 class _AddFriendToListTileState extends State<AddFriendToListTile> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-      child: Row(children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              widget.friendName,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(5, 10, 5, 0),
+      child: Card(
+        elevation: 5,
+        shadowColor: Colors.black,
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          child: Row(children: [
+            IconButton(onPressed: () {}, icon: Icon(Icons.people)),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.friendName + ' ' + widget.friendSurname,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(widget.friendEmail),
+              ],
+            ),
+            Spacer(),
+            ElevatedButton(
+              style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.green)),
+              onPressed: () {
+                addFriendToList();
+                setState(() {});
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) =>
+                      _buildPopupDialogAdd(context),
+                );
+              },
+              child: Container(
+                child: Text(
+                  "Dodaj",
+                ),
               ),
-            ),
-            Text(widget.friendEmail),
-          ],
+            ), // przycisk dodający znajomego do listy zakupowej // przycisk usuwający  znajomego z  listy zakupowej
+          ]),
         ),
-        Spacer(),
-        ElevatedButton(
-          style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(Colors.green)),
-          onPressed: () {
-            addFriendToList();
-            setState(() {});
-            showDialog(
-              context: context,
-              builder: (BuildContext context) => _buildPopupDialogAdd(context),
-            );
-          },
-          child: Container(
-            child: Text(
-              "Dodaj",
-            ),
-          ),
-        ), // przycisk dodający znajomego do listy zakupowej // przycisk usuwający  znajomego z  listy zakupowej
-      ]),
+      ),
     );
   }
 

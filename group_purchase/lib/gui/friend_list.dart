@@ -40,6 +40,8 @@ class _FriendListPageState extends State<FriendListPage> {
               return FriendListTile(
                 friendName:
                     friendListSnapshot.docs[index].data()['friendName']!,
+                friendSurname:
+                    friendListSnapshot.docs[index].data()['friendSurname']!,
                 friendEmail:
                     friendListSnapshot.docs[index].data()['friendEmail']!,
               );
@@ -50,6 +52,7 @@ class _FriendListPageState extends State<FriendListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromARGB(255, 231, 229, 229),
       appBar: AppBar(
         title: Text("Lista znajomych"),
         backgroundColor: Colors.green,
@@ -85,11 +88,13 @@ class _FriendListPageState extends State<FriendListPage> {
 
 class FriendListTile extends StatefulWidget {
   final String friendName;
+  final String friendSurname;
   final String friendEmail;
   const FriendListTile({
     super.key,
     required this.friendName,
     required this.friendEmail,
+    required this.friendSurname,
   });
 
   @override
@@ -99,37 +104,46 @@ class FriendListTile extends StatefulWidget {
 class _FriendListTileState extends State<FriendListTile> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-      child: Row(children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              widget.friendName,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(5, 10, 5, 0),
+      child: Card(
+        elevation: 5,
+        shadowColor: Colors.black,
+        child: Container(
+          padding: EdgeInsets.all(10),
+          child: Row(children: [
+            IconButton(onPressed: () {}, icon: Icon(Icons.people)),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.friendName + ' ' + widget.friendSurname,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(widget.friendEmail),
+              ],
             ),
-            Text(widget.friendEmail),
-          ],
+            Spacer(),
+            ElevatedButton(
+              style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.red)),
+              onPressed: () {
+                deleteFriend(widget
+                    .friendEmail); //Funkcja odpowiedzialna za kasowanie znajomych
+                setState(() {});
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) =>
+                        _buildPopupDialogDeleted(context));
+              },
+              child: Text("Usuń"),
+            ),
+          ]),
         ),
-        Spacer(),
-        ElevatedButton(
-          style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(Colors.red)),
-          onPressed: () {
-            deleteFriend(widget
-                .friendEmail); //Funkcja odpowiedzialna za kasowanie znajomych
-            setState(() {});
-            showDialog(
-                context: context,
-                builder: (BuildContext context) =>
-                    _buildPopupDialogDeleted(context));
-          },
-          child: Text("Usuń"),
-        ),
-      ]),
+      ),
     );
   }
 

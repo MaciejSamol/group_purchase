@@ -29,6 +29,7 @@ class _ListViewPageState extends State<ListViewPage> {
       new TextEditingController();
 
   String userName = '';
+  String userSurname = '';
 
   Future _getDataFromDatabase() async {
     if (FirebaseAuth.instance.currentUser != null) {
@@ -40,6 +41,7 @@ class _ListViewPageState extends State<ListViewPage> {
         if (documentSnapshot.exists) {
           setState(() {
             userName = '${documentSnapshot.get('name')}';
+            userSurname = '${documentSnapshot.get('surname')}';
           });
         } else {
           print('Document does not exist on the database');
@@ -100,6 +102,7 @@ class _ListViewPageState extends State<ListViewPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromARGB(255, 231, 229, 229),
       appBar: AppBar(
           backgroundColor: Colors.green,
           title: Text(widget.listName),
@@ -117,7 +120,7 @@ class _ListViewPageState extends State<ListViewPage> {
           showDialog(
             context: context,
             builder: (BuildContext context) =>
-                _buildPopupDialog(context, userName),
+                _buildPopupDialog(context, userName, userSurname),
           );
         },
       ),
@@ -173,7 +176,7 @@ class _ListViewPageState extends State<ListViewPage> {
     DatabaseService(uid: widget.index).deleteList(widget.index);
   }
 
-  Widget _buildPopupDialog(BuildContext context, String userName) {
+  Widget _buildPopupDialog(BuildContext context, String userName, String userSurname) {
     return AlertDialog(
       title: const Text('Dodawanie produktu'),
       content: Column(
@@ -198,11 +201,11 @@ class _ListViewPageState extends State<ListViewPage> {
             //Dodawanie produktu
             if (FirebaseAuth.instance.currentUser != null) {
               addProduct(
-                  productTextEditingController.text.capitalize(), userName);
+                  productTextEditingController.text.capitalize(), userName, userSurname);
               addToCount();
             } else {
               addAnonProduct(
-                  productTextEditingController.text.capitalize(), userName);
+                  productTextEditingController.text.capitalize(), userName, userSurname);
               addToAnonCount();
             }
             setState(() {
@@ -238,14 +241,14 @@ class _ListViewPageState extends State<ListViewPage> {
     DatabaseService(uid: widget.devicId).addToCount(widget.index);
   }
 
-  addProduct(String product, String userName) {
+  addProduct(String product, String userName, String userSurname) {
     DatabaseService(uid: FirebaseAuth.instance.currentUser!.email)
-        .addProduct(widget.index, product, userName);
+        .addProduct(widget.index, product, userName, userSurname);
   }
 
-  addAnonProduct(String product, String userName) {
+  addAnonProduct(String product, String userName, String userSurname) {
     DatabaseService(uid: widget.devicId)
-        .addProduct(widget.index, product, userName);
+        .addProduct(widget.index, product, userName, userSurname);
   }
 }
 

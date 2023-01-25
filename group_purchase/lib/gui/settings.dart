@@ -35,6 +35,8 @@ class _SettingsState extends State<Settings> {
             },
             child: Container(
               child: Card(
+                elevation: 5,
+                shadowColor: Colors.black,
                 child: checkForUser(),
               ),
             ),

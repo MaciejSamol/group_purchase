@@ -15,9 +15,11 @@ class LogoutPage extends StatefulWidget {
 
 class _LogoutPageState extends State<LogoutPage> {
   String? name = '';
+  String? surname = '';
   String? email = '';
   String? id = '';
   String? userNameInput = '';
+  String userSurnameInput = '';
 
   Future _getDataFromDatabase() async {
     await FirebaseFirestore.instance
@@ -30,6 +32,7 @@ class _LogoutPageState extends State<LogoutPage> {
           email = '${documentSnapshot.get('email')}';
           id = '${documentSnapshot.get('id')}';
           name = '${documentSnapshot.get('name')}';
+          surname = '${documentSnapshot.get('surname')}';
         });
       } else {
         print('Document does not exist on the database');
@@ -52,19 +55,47 @@ class _LogoutPageState extends State<LogoutPage> {
     });
   }
 
-  _displayTextInpuitDialog(BuildContext context) async {
+  Future _updateUserSurname() async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.email)
+        .update({
+      'surname': userSurnameInput,
+    });
+  }
+
+  _displayTextInpuitDialogSurname(BuildContext context) async {
     return showDialog(
         context: context,
         builder: (context) {
           return AlertDialog(
             title: const Text('Uaktualnij swoje imię i nazwisko'),
-            content: TextField(
-              onChanged: (value) {
-                setState(() {
-                  userNameInput = value;
-                });
-              },
-              decoration: const InputDecoration(hintText: 'Pisz tutaj'),
+            content: Wrap(
+              children: [
+                Column(
+                  children: [
+                    TextField(
+                      onChanged: (value) {
+                        setState(() {
+                          userNameInput = value;
+                        });
+                      },
+                      decoration: const InputDecoration(hintText: 'Imię'),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    TextField(
+                      onChanged: (value) {
+                        setState(() {
+                          userSurnameInput = value;
+                        });
+                      },
+                      decoration: const InputDecoration(hintText: 'Nazwisko'),
+                    ),
+                  ],
+                ),
+              ],
             ),
             actions: [
               ElevatedButton(
@@ -75,6 +106,7 @@ class _LogoutPageState extends State<LogoutPage> {
                 ),
                 onPressed: () {
                   _updateUserName();
+                  _updateUserSurname();
                   Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
@@ -111,10 +143,17 @@ class _LogoutPageState extends State<LogoutPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromARGB(255, 231, 229, 229),
       appBar: AppBar(
         title: Text("Profil"),
         backgroundColor: Colors.green,
         actions: <Widget>[
+          IconButton(
+            onPressed: () {
+              _displayTextInpuitDialogSurname(context);
+            },
+            icon: const Icon(Icons.edit),
+          ),
           IconButton(
               icon: Icon(Icons.people),
               onPressed: () {
@@ -125,41 +164,54 @@ class _LogoutPageState extends State<LogoutPage> {
               }),
         ],
       ), // Pasek górny
-      body: Center(
-        child: Column(
-          children: [
-            SizedBox(
-              height: 20,
-            ),
-            Image.asset(
-              'assets/images/profile.png',
-              width: 200,
-              height: 200,
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Text(
-              'Użytkownik: ' + name!,
-              style: const TextStyle(
-                fontSize: 20.0,
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            children: [
+              SizedBox(
+                height: 20,
               ),
-            ),
-            IconButton(
-              onPressed: () {
-                _displayTextInpuitDialog(context);
-              },
-              icon: const Icon(Icons.edit),
-            ),
-            Container(
-              child: Text(
-                'Email: ' + email!,
-                style: const TextStyle(
-                  fontSize: 15.0,
+              CircleAvatar(
+                radius: 95,
+                backgroundColor: Colors.green[800],
+                child: CircleAvatar(
+                  radius: 92,
+                  backgroundImage: AssetImage(
+                    'assets/images/profile.png',
+                  ),
                 ),
               ),
-            ),
-          ],
+              SizedBox(
+                height: 20,
+              ),
+              Text(
+                'Imię: ' + name!,
+                style: const TextStyle(
+                  fontSize: 20.0,
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Text(
+                'Nazwisko: ' + surname!,
+                style: const TextStyle(
+                  fontSize: 20.0,
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Container(
+                child: Text(
+                  'Email: ' + email!,
+                  style: const TextStyle(
+                    fontSize: 15.0,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

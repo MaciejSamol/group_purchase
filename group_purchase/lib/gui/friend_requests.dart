@@ -14,6 +14,7 @@ class _FriendRequestScreenState extends State<FriendRequestScreen> {
   DatabaseService databaseService = new DatabaseService();
 
   String name = '';
+  String surname = '';
 
   Future _getDataFromDatabase() async {
     await FirebaseFirestore.instance
@@ -25,6 +26,7 @@ class _FriendRequestScreenState extends State<FriendRequestScreen> {
         if (!mounted) return;
         setState(() {
           name = '${documentSnapshot.get('name')}';
+          surname = '${documentSnapshot.get('surname')}';
         });
       } else {
         print('Document does not exist on the database');
@@ -57,9 +59,12 @@ class _FriendRequestScreenState extends State<FriendRequestScreen> {
               return RequestTile(
                 friendName:
                     requestSnapshot.docs[index].data()['requestFromName']!,
+                friendSurname:
+                    requestSnapshot.docs[index].data()['requestFromSurname']!,
                 friendEmail:
                     requestSnapshot.docs[index].data()['requestFromEmail']!,
                 userName: name,
+                userSurname: surname,
               );
             })
         : Container();
@@ -68,6 +73,7 @@ class _FriendRequestScreenState extends State<FriendRequestScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromARGB(255, 231, 229, 229),
       appBar: AppBar(
         title: Text("Otrzymane zaproszenia"),
         backgroundColor: Colors.green,
@@ -84,12 +90,16 @@ class _FriendRequestScreenState extends State<FriendRequestScreen> {
 class RequestTile extends StatefulWidget {
   final String friendName;
   final String friendEmail;
+  final String friendSurname;
   final String userName;
+  final String userSurname;
   const RequestTile(
       {super.key,
       required this.friendName,
       required this.friendEmail,
-      required this.userName});
+      required this.userName,
+      required this.friendSurname,
+      required this.userSurname});
 
   @override
   State<RequestTile> createState() => _RequestTileState();
@@ -98,75 +108,86 @@ class RequestTile extends StatefulWidget {
 class _RequestTileState extends State<RequestTile> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-      child: Row(children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              widget.friendName,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(5, 10, 5, 0),
+      child: Card(
+        elevation: 5,
+        shadowColor: Colors.black,
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          child: Row(children: [
+            IconButton(onPressed: () {}, icon: Icon(Icons.people)),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.friendName + ' ' + widget.friendSurname,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(widget.friendEmail),
+              ],
             ),
-            Text(widget.friendEmail),
-          ],
-        ),
-        Spacer(),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.green,
-          ),
-          onPressed: () {
-            acceptRequest(
-                widget.friendEmail,
-                widget.friendName,
-                widget
-                    .userName); // funkcja odpowiedzialna za akceptację friend requesta
-            deleteRequest(widget.friendEmail);
-            setState(() {});
-            showDialog(
-              context: context,
-              builder: (BuildContext context) =>
-                  _buildPopupDialogAccepted(context),
-            );
+            Spacer(),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+              ),
+              onPressed: () {
+                acceptRequest(
+                    widget.friendEmail,
+                    widget.friendName,
+                    widget.userName,
+                    widget.friendSurname,
+                    widget
+                        .userSurname); // funkcja odpowiedzialna za akceptację friend requesta
+                deleteRequest(widget.friendEmail);
+                setState(() {});
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) =>
+                      _buildPopupDialogAccepted(context),
+                );
 
-            Navigator.of(context).pop();
-          },
-          child: const Text('Akceptuj'),
-        ),
-        SizedBox(
-          width: 10,
-        ),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.red,
-          ),
-          onPressed: () {
-            deleteRequest(widget
-                .friendEmail); // funkcja odpowiedzialna za odrzucenie friend requesta
-            setState(() {});
-            showDialog(
-              context: context,
-              builder: (BuildContext context) =>
-                  _buildPopupDialogDeleted(context),
-            );
+                Navigator.of(context).pop();
+              },
+              child: const Text('Akceptuj'),
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+              ),
+              onPressed: () {
+                deleteRequest(widget
+                    .friendEmail); // funkcja odpowiedzialna za odrzucenie friend requesta
+                setState(() {});
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) =>
+                      _buildPopupDialogDeleted(context),
+                );
 
-            Navigator.of(context).pop();
-          },
-          child: const Text('Odrzuć'),
+                Navigator.of(context).pop();
+              },
+              child: const Text('Odrzuć'),
+            ),
+          ]),
         ),
-      ]),
+      ),
     );
   }
 
-  acceptRequest(String friendEmail, String friendName, String name) {
+  acceptRequest(String friendEmail, String friendName, String name,
+      String friendSurname, String surname) {
     DatabaseService(uid: FirebaseAuth.instance.currentUser!.email)
-        .acceptFriendRequestUser(
-            FirebaseAuth.instance.currentUser!.email, friendEmail, friendName);
+        .acceptFriendRequestUser(FirebaseAuth.instance.currentUser!.email,
+            friendEmail, friendName, friendSurname);
     DatabaseService(uid: friendEmail).acceptFriendRequestFriend(
-        FirebaseAuth.instance.currentUser!.email, name, friendEmail);
+        FirebaseAuth.instance.currentUser!.email, name, friendEmail, surname);
   }
 
   deleteRequest(String friendEmail) {

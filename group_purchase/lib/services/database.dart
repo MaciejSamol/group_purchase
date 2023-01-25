@@ -10,9 +10,10 @@ class DatabaseService {
       FirebaseFirestore.instance.collection('users');
 
   // Funkcja tworząca kolekcję użytkowników
-  Future updateUserData(String? name, String? email, String? id) async {
+  Future updateUserData(String? name, String? surname, String? email, String? id) async {
     return await userCollection.doc(uid).set({
       'name': name,
+      'surname': surname,
       'email': email,
       'id': id,
     });
@@ -24,7 +25,7 @@ class DatabaseService {
   }
 
   // Funkcja bazy danych odpowiedzialna za przesłanie zaproszenia
-  Future sendFriendRequest(String? currentUserEmail, String? currentUserName,
+  Future sendFriendRequest(String? currentUserEmail, String? currentUserName, String? currentUserSurname,
       String? friendEmail) async {
     return await userCollection
         .doc(friendEmail)
@@ -33,6 +34,7 @@ class DatabaseService {
         .set({
       'requestFromEmail': currentUserEmail,
       'requestFromName': currentUserName,
+      'requestFromSurname': currentUserSurname,
       'requestTo': friendEmail,
     });
   }
@@ -44,7 +46,7 @@ class DatabaseService {
 
   //Funkcja odpowiedzialna za akceptację zaproszenia po stronie użytkownika
   Future acceptFriendRequestUser(
-      String? currentUserEmail, String? friendEmail, String? friendName) async {
+      String? currentUserEmail, String? friendEmail, String? friendName, String? friendSurname) async {
     return await userCollection
         .doc(currentUserEmail)
         .collection('friends')
@@ -52,12 +54,13 @@ class DatabaseService {
         .set({
       'friendEmail': friendEmail,
       'friendName': friendName,
+      'friendSurname': friendSurname,
     });
   }
 
   //Funkcja odpowiedzialna za akceptację zaproszenia po stronie przyjaciela
   Future acceptFriendRequestFriend(String? currentUserEmail,
-      String? currentUserName, String? friendEmail) async {
+      String? currentUserName, String? friendEmail, String? currentUserSurname) async {
     return await userCollection
         .doc(friendEmail)
         .collection('friends')
@@ -65,6 +68,7 @@ class DatabaseService {
         .set({
       'friendEmail': currentUserEmail,
       'friendName': currentUserName,
+      'friendSurname': currentUserSurname,
     });
   }
 
@@ -102,7 +106,7 @@ class DatabaseService {
         .delete();
   }
 
-  //Funkcja tworząca kolekcję list produktów użytkownika
+  //Funkcja tworząca kolekcję list produktów użytkownika -- tutaj
   Future addNewList(String? listName, usersArray) async {
     return await FirebaseFirestore.instance.collection('lists').doc().set({
       'count': 0,
@@ -129,7 +133,7 @@ class DatabaseService {
   }
 
   //Funkcja odpowiedzialna za dodawanie produktu do bazy danych
-  Future addProduct(String? index, String product, String userName) async {
+  Future addProduct(String? index, String product, String userName, String userSurname) async {
     return await FirebaseFirestore.instance
         .collection('lists')
         .doc(index)
@@ -137,7 +141,7 @@ class DatabaseService {
         .doc(product)
         .set({
       'name': product,
-      'addBy': userName,
+      'addBy': userName + ' ' + userSurname,
       'isChecked': false,
     }, SetOptions(merge: true));
   }
