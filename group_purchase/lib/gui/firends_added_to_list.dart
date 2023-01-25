@@ -52,6 +52,7 @@ class _FriendsAddedToListPageState extends State<FriendsAddedToListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromARGB(255, 231, 229, 229),
       appBar: AppBar(
         title: Text("Lista dodanych osób"),
         backgroundColor: Colors.green,
@@ -78,6 +79,7 @@ class FriendsAddedListTile extends StatefulWidget {
 
 class _FriendListTileState extends State<FriendsAddedListTile> {
   String friendName = '';
+  String friendSurname = '';
 
   Future _getDataFromDatabase() async {
     if (FirebaseAuth.instance.currentUser != null) {
@@ -90,6 +92,7 @@ class _FriendListTileState extends State<FriendsAddedListTile> {
           if (!mounted) return;
           setState(() {
             friendName = '${documentSnapshot.get('name')}';
+            friendSurname = '${documentSnapshot.get('surname')}';
           });
         } else {
           print('Document does not exist on the database');
@@ -104,7 +107,7 @@ class _FriendListTileState extends State<FriendsAddedListTile> {
     _getDataFromDatabase();
     return [
       Text(
-        friendName,
+        friendName + ' ' + friendSurname,
         style: const TextStyle(
           fontWeight: FontWeight.bold,
         ),
@@ -115,28 +118,37 @@ class _FriendListTileState extends State<FriendsAddedListTile> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-      child: Row(children: [
-        Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: createWidget()),
-        Spacer(),
-        ElevatedButton(
-          style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(Colors.red)),
-          onPressed: () {
-            removeFriendFromList();
-            setState(() {});
-            showDialog(
-              context: context,
-              builder: (BuildContext context) =>
-                  _buildPopupDialogDeleted(context),
-            ); // Funkcja odpowiedzialna za usunięcie znajomego z listy zakupowej
-          },
-          child: Text("Usuń"),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(5, 10, 5, 0),
+      child: Card(
+        elevation: 5,
+        shadowColor: Colors.black,
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          child: Row(children: [
+            IconButton(onPressed: () {}, icon: Icon(Icons.people)),
+            Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: createWidget()),
+            Spacer(),
+            ElevatedButton(
+              style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.red)),
+              onPressed: () {
+                removeFriendFromList();
+                setState(() {});
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) =>
+                      _buildPopupDialogDeleted(context),
+                ); // Funkcja odpowiedzialna za usunięcie znajomego z listy zakupowej
+              },
+              child: Text("Usuń"),
+            ),
+          ]),
         ),
-      ]),
+      ),
     );
   }
 

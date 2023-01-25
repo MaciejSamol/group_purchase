@@ -22,6 +22,7 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   Map _source = {ConnectivityResult.none: false};
   final MyConnectivity _connectivity = MyConnectivity.instance;
+  String string = '';
   DatabaseService databaseService = new DatabaseService();
   TextEditingController listNameTextEditingController =
       new TextEditingController();
@@ -31,7 +32,19 @@ class _MainPageState extends State<MainPage> {
     super.initState();
     _connectivity.initialise();
     _connectivity.myStream.listen((source) {
-      setState(() => _source = source);
+      _source = source;
+      switch (_source.keys.toList()[0]) {
+        case ConnectivityResult.mobile:
+          string = 'Online';
+          break;
+        case ConnectivityResult.wifi:
+          string = 'Online';
+          break;
+        case ConnectivityResult.none:
+        default:
+          string = 'Offline';
+      }
+      setState(() {});
     });
     onRefresh(FirebaseAuth.instance.currentUser);
   }
@@ -108,20 +121,9 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    String string;
-    switch (_source.keys.toList()[0]) {
-      case ConnectivityResult.mobile:
-        string = 'Online';
-        break;
-      case ConnectivityResult.wifi:
-        string = 'Online';
-        break;
-      case ConnectivityResult.none:
-      default:
-        string = 'Offline';
-    }
     return string != 'Offline'
         ? Scaffold(
+            backgroundColor: Color.fromARGB(255, 231, 229, 229),
             appBar: AppBar(
               backgroundColor: Colors.green,
               leading: IconButton(
@@ -182,14 +184,33 @@ class _MainPageState extends State<MainPage> {
             ),
           )
         : Scaffold(
+            backgroundColor: Color.fromARGB(255, 231, 229, 229),
             appBar: AppBar(
-              backgroundColor: Colors.green,
-              title: const Text('Brak połączenia z internetem'),
+              backgroundColor: Colors.grey,
+              title: Center(child: const Text('Brak połączenia z internetem')),
             ),
             body: Center(
-              child: Text(
-                'Offline',
-                style: TextStyle(fontSize: 54),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircleAvatar(
+                    radius: 95,
+                    backgroundColor: Colors.grey,
+                    child: CircleAvatar(
+                      radius: 92,
+                      backgroundImage: AssetImage(
+                        'assets/images/no_connection.png',
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 40,
+                  ),
+                  Text(
+                    'Offline',
+                    style: TextStyle(fontSize: 40),
+                  ),
+                ],
               ),
             ),
           );
@@ -375,44 +396,39 @@ class _ListTileState extends State<ListTile> {
       },
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border(bottom: BorderSide(width: 2.0, color: Colors.grey)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
-                spreadRadius: 5,
-                blurRadius: 5,
-                offset: Offset(0, 3),
-              )
-            ],
-          ),
-          child: Column(children: [
-            Padding(
-              padding: const EdgeInsets.all(6.0),
-              child: Row(),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(6.0),
-              child: Row(
-                children: [
-                  Text(
-                    widget.listName,
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  Spacer(
-                    flex: 1,
-                  ),
-                  // Zliczanie produktów
-                  Text(
-                    widget.bought + "/" + widget.count,
-                    style: TextStyle(fontSize: 20),
-                  )
-                ],
+        child: Card(
+          elevation: 5,
+          shadowColor: Colors.black,
+          child: ClipPath(
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  left: BorderSide(color: Colors.green, width: 5),
+                ),
               ),
+              child: Column(children: [
+                Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: Row(
+                    children: [
+                      Text(
+                        widget.listName,
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      Spacer(
+                        flex: 1,
+                      ),
+                      // Zliczanie produktów
+                      Text(
+                        widget.bought + "/" + widget.count,
+                        style: TextStyle(fontSize: 20),
+                      )
+                    ],
+                  ),
+                ),
+              ]),
             ),
-          ]),
+          ),
         ),
       ),
     );

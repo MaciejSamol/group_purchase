@@ -45,6 +45,7 @@ class _LoginPageState extends State<LoginPage> {
       // create a new document for the user with the uid
       await DatabaseService(uid: userCredential.user!.email).updateUserData(
           userCredential.user?.displayName,
+          '',
           userCredential.user!.email,
           userCredential.user!.uid);
 
@@ -59,6 +60,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromARGB(255, 231, 229, 229),
       appBar: AppBar(
         backgroundColor: Colors.green,
         title: Text(login ? 'Zaloguj się' : 'Zarejestruj się'),

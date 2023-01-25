@@ -16,6 +16,7 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
       new TextEditingController();
 
   String name = '';
+  String surname = '';
 
   Future _getDataFromDatabase() async {
     await FirebaseFirestore.instance
@@ -26,6 +27,7 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
       if (documentSnapshot.exists) {
         setState(() {
           name = '${documentSnapshot.get('name')}';
+          surname = '${documentSnapshot.get('surname')}';
         });
       } else {
         print('Document does not exist on the database');
@@ -72,8 +74,10 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
             itemBuilder: (context, index) {
               return SearchTile(
                 friendName: searchSnapshot.docs[index].data()['name']!,
+                friendSurname: searchSnapshot.docs[index].data()['surname']!,
                 friendEmail: searchSnapshot.docs[index].data()['email']!,
                 currentUserName: name,
+                currentUserSurname: surname,
               );
             })
         : Container();
@@ -82,6 +86,7 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromARGB(255, 231, 229, 229),
       appBar: AppBar(
         title: Text("Dodaj znajomego"),
         backgroundColor: Colors.green,
@@ -135,13 +140,17 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
 
 class SearchTile extends StatefulWidget {
   final String friendName;
+  final String friendSurname;
   final String friendEmail;
   final String currentUserName;
+  final String currentUserSurname;
   const SearchTile(
       {super.key,
       required this.friendName,
       required this.friendEmail,
-      required this.currentUserName});
+      required this.currentUserName,
+      required this.friendSurname,
+      required this.currentUserSurname});
 
   @override
   State<SearchTile> createState() => _SearchTileState();
@@ -164,53 +173,62 @@ class _SearchTileState extends State<SearchTile> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-      child: Row(children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              widget.friendName,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(5, 10, 5, 0),
+      child: Card(
+        elevation: 5,
+        shadowColor: Colors.black,
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          child: Row(children: [
+            IconButton(onPressed: () {}, icon: Icon(Icons.people)),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.friendName + ' ' + widget.friendSurname,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(widget.friendEmail),
+              ],
             ),
-            Text(widget.friendEmail),
-          ],
+            Spacer(),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+              ),
+              onPressed: () {
+                _checkIfExists();
+                if (existance == false) {
+                  sendRequest(widget
+                      .friendEmail); // funkcja odpowiedzialna za wysłanie friend requesta
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) =>
+                        _buildPopupDialog(context),
+                  );
+                } else {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) =>
+                        _buildPopupDialogRepeat(context),
+                  );
+                }
+              },
+              child: const Text('Dodaj'),
+            ),
+          ]),
         ),
-        Spacer(),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.green,
-          ),
-          onPressed: () {
-            _checkIfExists();
-            if (existance == false) {
-              sendRequest(widget
-                  .friendEmail); // funkcja odpowiedzialna za wysłanie friend requesta
-              showDialog(
-                context: context,
-                builder: (BuildContext context) => _buildPopupDialog(context),
-              );
-            } else {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) =>
-                    _buildPopupDialogRepeat(context),
-              );
-            }
-          },
-          child: const Text('Dodaj'),
-        ),
-      ]),
+      ),
     );
   }
 
   sendRequest(String friendEmail) {
     DatabaseService(uid: FirebaseAuth.instance.currentUser!.email)
         .sendFriendRequest(FirebaseAuth.instance.currentUser!.email,
-            widget.currentUserName, friendEmail);
+            widget.currentUserName, widget.currentUserSurname, friendEmail);
   }
 
   Widget _buildPopupDialog(BuildContext context) {
