@@ -1,5 +1,5 @@
 # Group Purchase
-[funckjonalnosc-apki_ojivtw05.webm](https://user-images.githubusercontent.com/105966932/214914360-be447ccf-83cd-4163-bbdc-a100f8c6f1ac.webm)
+(https://user-images.githubusercontent.com/105966932/214914360-be447ccf-83cd-4163-bbdc-a100f8c6f1ac.webm)
  
 
 ## Co to za apka?
