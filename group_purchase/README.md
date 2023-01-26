@@ -4,12 +4,15 @@ Aplikacja Gruop Purchase pozwala na tworzenie i edycję list zakupów, które mo
 ## Wymagania
 -Flutter
 -Firebase
+-Paczki flutterowe: firebase_auth, cloud_firestore
 
 ## Instalacja
 1. Pobierz lub sklonuj projekt na swój komputer.
-2. Otwórz plik pubspec.yaml i zainstaluj wymagane pakiety.
-3. Skonfiguruj Firebase dla swojej aplikacji.
-4. Uruchom aplikację na swoim emulatorze lub urządzeniu.
+2. Zainstaluj język pakiet Flutter w swoim edytorze kodu
+3. Otwórz plik pubspec.yaml i zainstaluj wymagane pakiety.
+4. Skonfiguruj Firebase dla swojej aplikacji.
+5. Uruchom aplikację na swoim emulatorze lub urządzeniu.
+6. Ciesz się funckjonalnością aplikacji
 
 ## Funkcje
 -Tworzenie i edycja list zakupów
@@ -28,12 +31,17 @@ Aplikacja Gruop Purchase pozwala na tworzenie i edycję list zakupów, które mo
 ## Bezpieczeństwo
 Aplikacja korzysta z Firebase, co oznacza, że wszystkie dane są przechowywane w chmurze i szyfrowane podczas transmisji. Jest to gwarancja bezpieczeństwa Twoich danych i informacji o zakupach.
 
+Znane problemy
+-Apikacja stworzona na teleofny z systeme Android
+
 ## Dalszy rozwój
 Aplikacja jest stale rozwijana i planujemy dodanie nowych funkcji takich jak:
 -Możlwość podpwiadania produktu po wpisaniu początkowych liter
 -Tworzenie kategorii produktów
 -Dodawanie ilości produktów
 -Integracja z API aby mieć wizualny podgląd produktów
+
+
 
 ## Kontakt
 Jeśli masz pytania lub sugestie dotyczące aplikacji, skontaktuj się z nami pod adresem email: patryk.orzechowski.96@gmail.com bądź maciejsamol98@gmail.com
