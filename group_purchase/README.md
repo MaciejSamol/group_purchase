@@ -36,7 +36,7 @@ Aplikacja Gruop Purchase pozwala na tworzenie i edycję list zakupów, które mo
 ## Bezpieczeństwo
 Aplikacja korzysta z Firebase, co oznacza, że wszystkie dane są przechowywane w chmurze i szyfrowane podczas transmisji. Jest to gwarancja bezpieczeństwa Twoich danych i informacji o zakupach.
 
-Znane problemy
+## Znane problemy
 Apikacja stworzona na teleofny z systemem Android
 
 ## Dalszy rozwój
