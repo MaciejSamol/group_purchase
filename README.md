@@ -1,4 +1,4 @@
-Group Purchase
+# Group Purchase
 
  [Funkcjonalność.webm](https://user-images.githubusercontent.com/105966932/214914551-ed69c167-542a-4bc2-829a-a142c3fec4c1.webm)
 
@@ -36,16 +36,26 @@ Aplikacja Gruop Purchase pozwala na tworzenie i edycję list zakupów, które mo
 * Wszystkie listy, do których dany użytkownik ma dostęp wyświetlają się na głównej stronie palikacji.
 
 ## Wykorzystane technologie
-* Dart - stworzony przez firmę Google, obiektowy język programowania, implementowany między innymi we frameworku Flutter,
-* Flutter - jest to otwartoźródłowy zestaw narzędzi dla programistów przeznaczony do tworzenia natywnych, wieloplatformowych aplikacji mobilnych, komputerowych oraz internetowych. Framework ten posiada oficjalny menedżer pakietów pod adresem pub.dev:
-  - Stateless Widget - jest to widżet, który nie wymaga zmiennego stanu. Opsiuje część interfejsu użytkownika poprzez zbudowanie konstelacji innych widżetów. Proces ten kontynuwany jest rekurencyjnie,
-  - Statefull Widget - widżet cechujący się zmiennym stanem. Stan jest informacją, która może być odczyta synchronicznie podczas budowania widżetu lub asynchronicznie. Zastosowanie tej klasy pozwala na dynamiczną aktualizację interfejsu użytkownika,
-  - Device Info Plus - jest to pakiet pobierający informacje na temat urządzenia użytkownika, w aplikacji zastosowany w celu przypisania unikatowego adresu dla listy zakupowej stworzonej przez niezalogowanego użytkownika,
-  - Connectivity Plus - wtyczka ta umożliwia aplikacji wykrycie łączności sieciowej. Zastosowana w celu wyświetlenia komunikatu gdy użytkownik straci połączenie,
-  - Flutter Native Splash - pakiet pozwalający na wyświetlenie własnego logo podczas uruchamiania aplikacji,
-* Google Firebase:
-  - Firebase Authentication - zapewnia usługi backendowe, pakiety SDK oraz gotowe biblioteki interfejsu użytkownika do uwierzytelniania użytkowników aplikacji,
-  - Cloud Firestore - jest to baza danych NoSQL, która pozwala łatwo przechowywać, synchronizować i wyszukiwać dane dla aplikacji mobilnych i internetowych.
+### Dart
+* stworzony przez firmę Google, obiektowy język programowania, implementowany między innymi we frameworku Flutter,
+### Flutter
+* jest to otwartoźródłowy zestaw narzędzi dla programistów przeznaczony do tworzenia natywnych, wieloplatformowych aplikacji mobilnych, komputerowych oraz internetowych. Framework ten posiada oficjalny menedżer pakietów pod adresem pub.dev:
+  - #### Stateless Widget
+    jest to widżet, który nie wymaga zmiennego stanu. Opsiuje część interfejsu użytkownika poprzez zbudowanie konstelacji innych widżetów. Proces ten kontynuwany jest rekurencyjnie,
+  - #### Statefull Widget
+    widżet cechujący się zmiennym stanem. Stan jest informacją, która może być odczyta synchronicznie podczas budowania widżetu lub asynchronicznie. Zastosowanie tej klasy pozwala na dynamiczną aktualizację interfejsu użytkownika,
+  -  #### Device Info Plus
+     jest to pakiet pobierający informacje na temat urządzenia użytkownika, w aplikacji zastosowany w celu przypisania unikatowego adresu dla listy zakupowej stworzonej przez niezalogowanego użytkownika,
+  - #### Connectivity Plus
+    wtyczka ta umożliwia aplikacji wykrycie łączności sieciowej. Zastosowana w celu wyświetlenia komunikatu gdy użytkownik straci połączenie,
+  - #### Flutter Native Splash
+    pakiet pozwalający na wyświetlenie własnego logo podczas uruchamiania aplikacji,
+### Google Firebase:
+* to platforma do tworzenia aplikacji mobilnych i internetowych. Udostępnia szereg ściśle zintegrowanych funkcji, które można ze sobą łączyć:
+  - #### Firebase Authentication
+    zapewnia usługi backendowe, pakiety SDK oraz gotowe biblioteki interfejsu użytkownika do uwierzytelniania użytkowników aplikacji,
+  - #### Cloud Firestore
+    jest to baza danych NoSQL, która pozwala łatwo przechowywać, synchronizować i wyszukiwać dane dla aplikacji mobilnych i internetowych.
 
 
 ## Bezpieczeństwo
