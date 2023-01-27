@@ -1,3 +1,6 @@
+/* Strona Profilowa, która zawiera podstawowe informacje o użytkowniku.
+Na tej stronie można edytować dane użytkownika oraz przejść do listy znajomych. */
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +24,7 @@ class _LogoutPageState extends State<LogoutPage> {
   String? userNameInput = '';
   String userSurnameInput = '';
 
+  // Funkcja pobierająca dane użytkownika z bazy danych
   Future _getDataFromDatabase() async {
     await FirebaseFirestore.instance
         .collection('users')
@@ -46,6 +50,7 @@ class _LogoutPageState extends State<LogoutPage> {
     _getDataFromDatabase();
   }
 
+  // Funkcja odpowiedzialna za aktualizację pola zawierającego imię użytkownika w bazie danych
   Future _updateUserName() async {
     await FirebaseFirestore.instance
         .collection('users')
@@ -55,6 +60,7 @@ class _LogoutPageState extends State<LogoutPage> {
     });
   }
 
+  // Funkcja odpowiedzialna za aktualizację pola zawierającego nazwisko użytkownika w bazie danych
   Future _updateUserSurname() async {
     await FirebaseFirestore.instance
         .collection('users')
@@ -64,6 +70,7 @@ class _LogoutPageState extends State<LogoutPage> {
     });
   }
 
+  // Funkcja wyświetlająca okienko dialogowe, w którym następnie użytkownik wprowadza swoje dane osobowe
   _displayTextInpuitDialogSurname(BuildContext context) async {
     return showDialog(
         context: context,
@@ -105,6 +112,7 @@ class _LogoutPageState extends State<LogoutPage> {
                   style: TextStyle(color: Colors.black),
                 ),
                 onPressed: () {
+                  // Wywołanie funkcji aktualizujących dane użytkownika.
                   _updateUserName();
                   _updateUserSurname();
                   Navigator.pushReplacement(
@@ -148,6 +156,7 @@ class _LogoutPageState extends State<LogoutPage> {
         title: Text("Profil"),
         backgroundColor: Colors.green,
         actions: <Widget>[
+          //Przycisk wyświetlający okno dialogowe służące do wprowadzania danych osobowych
           IconButton(
             onPressed: () {
               _displayTextInpuitDialogSurname(context);
@@ -155,6 +164,7 @@ class _LogoutPageState extends State<LogoutPage> {
             icon: const Icon(Icons.edit),
           ),
           IconButton(
+              // Przycisk, który umożliwia przejscie do listy znajomych
               icon: Icon(Icons.people),
               onPressed: () {
                 Navigator.push(

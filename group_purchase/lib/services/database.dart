@@ -1,6 +1,12 @@
+/* Plik obsługujący wszystkie zapytania do bazy danych.
+W projekcie skorzystano z nowego rozwiązania od firmy Google - "Cloud Firestore" 
+Jest to nowa, usprawniona wersja bazy danych, która pozwala między innymi na:
+- aktualizację danych w czasie rzeczywistym
+- synchronizację offline
+- skalowalność
+*/
+
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/animation.dart';
 
 class DatabaseService {
   final String? uid;
@@ -10,7 +16,8 @@ class DatabaseService {
       FirebaseFirestore.instance.collection('users');
 
   // Funkcja tworząca kolekcję użytkowników
-  Future updateUserData(String? name, String? surname, String? email, String? id) async {
+  Future updateUserData(
+      String? name, String? surname, String? email, String? id) async {
     return await userCollection.doc(uid).set({
       'name': name,
       'surname': surname,
@@ -25,8 +32,8 @@ class DatabaseService {
   }
 
   // Funkcja bazy danych odpowiedzialna za przesłanie zaproszenia
-  Future sendFriendRequest(String? currentUserEmail, String? currentUserName, String? currentUserSurname,
-      String? friendEmail) async {
+  Future sendFriendRequest(String? currentUserEmail, String? currentUserName,
+      String? currentUserSurname, String? friendEmail) async {
     return await userCollection
         .doc(friendEmail)
         .collection('requests')
@@ -45,8 +52,8 @@ class DatabaseService {
   }
 
   //Funkcja odpowiedzialna za akceptację zaproszenia po stronie użytkownika
-  Future acceptFriendRequestUser(
-      String? currentUserEmail, String? friendEmail, String? friendName, String? friendSurname) async {
+  Future acceptFriendRequestUser(String? currentUserEmail, String? friendEmail,
+      String? friendName, String? friendSurname) async {
     return await userCollection
         .doc(currentUserEmail)
         .collection('friends')
@@ -59,8 +66,11 @@ class DatabaseService {
   }
 
   //Funkcja odpowiedzialna za akceptację zaproszenia po stronie przyjaciela
-  Future acceptFriendRequestFriend(String? currentUserEmail,
-      String? currentUserName, String? friendEmail, String? currentUserSurname) async {
+  Future acceptFriendRequestFriend(
+      String? currentUserEmail,
+      String? currentUserName,
+      String? friendEmail,
+      String? currentUserSurname) async {
     return await userCollection
         .doc(friendEmail)
         .collection('friends')
@@ -133,7 +143,8 @@ class DatabaseService {
   }
 
   //Funkcja odpowiedzialna za dodawanie produktu do bazy danych
-  Future addProduct(String? index, String product, String userName, String userSurname) async {
+  Future addProduct(String? index, String product, String userName,
+      String userSurname) async {
     return await FirebaseFirestore.instance
         .collection('lists')
         .doc(index)
@@ -198,6 +209,7 @@ class DatabaseService {
     });
   }
 
+  // Funkcja inkrementująca liczbę produktów znajdujących się w liście
   Future addToCount(String? index) async {
     return await FirebaseFirestore.instance
         .collection('lists')
@@ -207,6 +219,7 @@ class DatabaseService {
     });
   }
 
+  // Funkcja dekrementująca liczbę produktów znajdujących się w liście
   Future deleteFromCount(String index) async {
     return await FirebaseFirestore.instance
         .collection('lists')
@@ -216,6 +229,7 @@ class DatabaseService {
     });
   }
 
+  // Funkcja inkrementująca liczbę zakupionyhc produktów w liście
   Future addToBought(String index) async {
     return await FirebaseFirestore.instance
         .collection('lists')
@@ -225,6 +239,7 @@ class DatabaseService {
     });
   }
 
+  // Funkcja dekrementująca liczbę zakupionych produktów w liście
   Future deleteFromBought(String index) async {
     return await FirebaseFirestore.instance
         .collection('lists')
@@ -234,7 +249,7 @@ class DatabaseService {
     });
   }
 
-  // FUnkcja pobierająca pola z konkretnej listy
+  // FUnkcja pobierająca pola z konkretnej listy takie jak lista użytkowników, liczba zakupionych produktów
   getUsersList(String index) {
     return FirebaseFirestore.instance.collection('lists').doc(index).get();
   }

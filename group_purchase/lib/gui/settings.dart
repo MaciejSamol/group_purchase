@@ -1,8 +1,10 @@
+/* Strona odpowiedzialna za prezentację menu ustawień aplikacji.
+W aktualnej wersji znajduje się tam wyłacznie przycisk odpowiedzialny za wylogowanie użytkownika.
+W przyszłości pojawi się w tym widoku między innymi możliwość zmiany motywu aplikacji na ciemny
+ */
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
-import '../gui/login.dart';
-import '../gui/logout.dart';
 
 class Settings extends StatefulWidget {
   final Function(User?) onSignOut;
@@ -44,6 +46,8 @@ class _SettingsState extends State<Settings> {
         ));
   }
 
+  /* Funkcja sprawdzająca czy użytkownik jest zalogowany do aplikacji.
+  Jeśli tak, wyświetli przycisk wyloguj, w innym wypadku widok ten będzie pusty. */
   checkForUser() {
     if (FirebaseAuth.instance.currentUser != null) {
       return Column(

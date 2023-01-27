@@ -1,10 +1,10 @@
-import 'package:firebase_core/firebase_core.dart';
+/* Strona logowania, pozwala na rejestrację nowego użytkownika oraz umożliwia zalogowanie się do
+aplikacji instniejącemu już użytkownikowi
+ */
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:group_purchase/services/database.dart';
-
-import 'home_page.dart';
-import 'logout.dart';
 
 class LoginPage extends StatefulWidget {
   final Function(User?) onSignIn;
@@ -21,6 +21,7 @@ class _LoginPageState extends State<LoginPage> {
   String error = "";
   bool login = true;
 
+  // Funkcja odpowiedzialna za logowanie użytkownika
   Future<void> loginUser() async {
     try {
       UserCredential userCredential = await FirebaseAuth.instance
@@ -35,6 +36,7 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  // Funkcja odpowiedzialna za tworzenie nowego użytkownika
   Future<void> createUser() async {
     try {
       UserCredential userCredential = await FirebaseAuth.instance

@@ -1,3 +1,5 @@
+/* Strona zawierająca wszystkie otrzymane zaproszenia do grona znajomych. Znajdujący się na niej użytkownik może zaakceptować bądź odrzucić otrzymane zaproszenie. */
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:group_purchase/services/database.dart';
@@ -196,6 +198,7 @@ class _RequestTileState extends State<RequestTile> {
             FirebaseAuth.instance.currentUser!.email, friendEmail);
   }
 
+  // Dialog wyskakujący po anulowaniu zaproszenia
   Widget _buildPopupDialogDeleted(BuildContext context) {
     return new AlertDialog(
       title: const Text('Usunięto zaproszenie'),
@@ -214,6 +217,7 @@ class _RequestTileState extends State<RequestTile> {
     );
   }
 
+  // Dialog pojawiający się po akceptacji zaproszenia
   Widget _buildPopupDialogAccepted(BuildContext context) {
     return new AlertDialog(
       title: const Text('Zaakceptowano zaproszenie'),

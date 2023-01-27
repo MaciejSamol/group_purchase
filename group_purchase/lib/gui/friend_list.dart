@@ -1,10 +1,10 @@
-import 'package:firebase_core/firebase_core.dart';
+/* Strona "Lista znajopmych" zawiera wszystkie informacje na temat osób, które zostały przyjęte lub zaproszone przez użytkownika do grona znajomych. Na stronie tej znajdują się przyciski pozwalające na dodanie znajomego oraz wyświetlenie listy oczekujących zaproszeń do grona znajomych. Użytkownik znajdujący się na tej stronie może w dowolnej chwili usunąć daną osobę ze swojej listy znajomych.*/
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:group_purchase/gui/add_friend.dart';
 import 'package:group_purchase/gui/friend_requests.dart';
 import 'package:group_purchase/services/database.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FriendListPage extends StatefulWidget {
   const FriendListPage({super.key});
@@ -155,6 +155,7 @@ class _FriendListTileState extends State<FriendListTile> {
         FirebaseAuth.instance.currentUser!.email, friendEmail);
   }
 
+  // Dialog wyświetlany po usunięciu znajomego z listy
   Widget _buildPopupDialogDeleted(BuildContext context) {
     return new AlertDialog(
       title: const Text('Usunięto znajomego z listy'),

@@ -1,13 +1,12 @@
+/* Strona wyświetlająca zawartość listy zakupowej użytkownika.
+Na stronie tej znajduje się lista produktów. Przy każdym z produktów znajduje się przycisk odpowiedzialny za usunięcie produktu z listy oraz przycisk pozwalający na oznaczenie produktu jako produkt już zakupiony. */
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:group_purchase/gui/add_friend_to_list.dart';
 import 'package:group_purchase/gui/firends_added_to_list.dart';
 import 'package:group_purchase/services/database.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ListViewPage extends StatefulWidget {
   final String index;
@@ -31,6 +30,7 @@ class _ListViewPageState extends State<ListViewPage> {
   String userName = '';
   String userSurname = '';
 
+  // Funkcja pobierająca imię i nazwisko użytkownika z bazy danych
   Future _getDataFromDatabase() async {
     if (FirebaseAuth.instance.currentUser != null) {
       await FirebaseFirestore.instance
@@ -54,6 +54,7 @@ class _ListViewPageState extends State<ListViewPage> {
 
   dynamic productSnapshot;
 
+  //Funkcja inicjująca pobranie danych listy zakupowej z bazdy
   Future initiateProductsLoad() async {
     await databaseService.getProducts(widget.index).then((val) {
       if (!mounted) return;
@@ -74,6 +75,7 @@ class _ListViewPageState extends State<ListViewPage> {
     });
   }
 
+  // Funkcja tworząca listę zawierającą poszczególne produkty w widoku karty.
   Widget productsWidget() {
     initiateProductsLoad();
     return productSnapshot != null
@@ -127,6 +129,7 @@ class _ListViewPageState extends State<ListViewPage> {
     );
   }
 
+  // Sprawdzenie czy użytkownik jest zalogowany
   checkForUser() {
     if (FirebaseAuth.instance.currentUser != null) {
       return <Widget>[
@@ -176,7 +179,8 @@ class _ListViewPageState extends State<ListViewPage> {
     DatabaseService(uid: widget.index).deleteList(widget.index);
   }
 
-  Widget _buildPopupDialog(BuildContext context, String userName, String userSurname) {
+  Widget _buildPopupDialog(
+      BuildContext context, String userName, String userSurname) {
     return AlertDialog(
       title: const Text('Dodawanie produktu'),
       content: Column(
@@ -200,12 +204,12 @@ class _ListViewPageState extends State<ListViewPage> {
           onPressed: () {
             //Dodawanie produktu
             if (FirebaseAuth.instance.currentUser != null) {
-              addProduct(
-                  productTextEditingController.text.capitalize(), userName, userSurname);
+              addProduct(productTextEditingController.text.capitalize(),
+                  userName, userSurname);
               addToCount();
             } else {
-              addAnonProduct(
-                  productTextEditingController.text.capitalize(), userName, userSurname);
+              addAnonProduct(productTextEditingController.text.capitalize(),
+                  userName, userSurname);
               addToAnonCount();
             }
             setState(() {
@@ -252,6 +256,7 @@ class _ListViewPageState extends State<ListViewPage> {
   }
 }
 
+// Klasa odpowiedzialna za wygląd karty produktu.
 class ProductTile extends StatefulWidget {
   final String name;
   final String user;

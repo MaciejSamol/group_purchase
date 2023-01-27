@@ -1,3 +1,5 @@
+/* Strona na której można wyszukać użytkownika poprzez jego adres email. Po wyszukaniu wybranej osoby, użytkownik może wysłać zaproszenie do grona znajomych naciskając przycisk "dodaj" . */
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

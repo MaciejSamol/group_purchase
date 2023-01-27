@@ -1,8 +1,9 @@
+/* Strona domowa aplikacji. Widok ten zawiera wszystkie listy użytklownika oraz przyciski pozwalające na przejście do strony profilowej oraz do menu ustawień. Zielony przycisk w prawym dolnym rogu jest odpowiedzialny za tworzenie nowejlisty zakupowej. */
+
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/services.dart';
 import 'package:group_purchase/gui/list_view.dart';
 import 'package:group_purchase/gui/settings.dart';
 import 'package:group_purchase/services/database.dart';
@@ -115,7 +116,7 @@ class _MainPageState extends State<MainPage> {
                       anonListSnapshot.docs[index].data()['bought']!.toString(),
                 );
               })
-          : Container(); // W przyszłości listy dla użytkowników bez konta
+          : Container();
     }
   }
 
@@ -361,6 +362,7 @@ class _MainPageState extends State<MainPage> {
   }
 }
 
+// Klasa tworząca wygląd pojedyńczej karty listy zakupowej
 class ListTile extends StatefulWidget {
   final String listName;
   final String id;

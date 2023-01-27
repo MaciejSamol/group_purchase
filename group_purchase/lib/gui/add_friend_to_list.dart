@@ -1,10 +1,8 @@
-import 'package:firebase_core/firebase_core.dart';
+/* Strona dodawania osób z listy znajomych użytkownika do listy zakupowej. Dodane osoby będą mogły dodawać, kasować oraz oznaczać produkty jako zakupione w tej konkretnej liście zakupowej. */
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:group_purchase/gui/add_friend.dart';
-import 'package:group_purchase/gui/friend_requests.dart';
 import 'package:group_purchase/services/database.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AddFriendToListPage extends StatefulWidget {
   final String index;
