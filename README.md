@@ -2,7 +2,6 @@
 
  [Funkcjonalność.webm](https://user-images.githubusercontent.com/105966932/214914551-ed69c167-542a-4bc2-829a-a142c3fec4c1.webm)
 
-
 ## Co to za apka?
 Aplikacja Gruop Purchase pozwala na tworzenie i edycję list zakupów, które mogą być dzielone z innymi użytkownikami. Dzięki temu, użytkownicy mogą współpracować przy tworzeniu list zakupów, np. dla zakupów grupowych, uzytkownicy mogą ją edytować
 
